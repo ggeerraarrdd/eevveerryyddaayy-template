@@ -354,7 +354,7 @@ def get_form_section_button(handler, today, file_last):
 
     def create_solution_file(b):
 
-        print(b.description)
+        print(b.tooltip)
 
         from src import get_runs_default
 
@@ -379,7 +379,7 @@ def get_form_section_button(handler, today, file_last):
         )
 
 
-    create_button = widgets.Button(description="Processing entry...")
+    create_button = widgets.Button(description="Process Entry", tooltip="Processing...")
     create_button.on_click(create_solution_file)
     section_button = widgets.VBox([create_button], layout=container_layout)
 
