@@ -16,8 +16,8 @@ One [ ] problem a day for [ ]
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 
-![The Crickets](docs/the_crickets.png)
-_(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Push like yours will surely come my way, a-hey, a-hey-hey / Push like yours will surely come my way)_
+![Lorem Picsum](https://picsum.photos/900/450)
+_(Lorem picsum dolor sit imago, illustrectatur adipiscing elictorial.)_
 
 ## Index
 
@@ -36,8 +36,8 @@ _(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Push li
 
 ## Acknowledgments
 
-* TODO
+* [Lorem Picsum](https://picsum.photos/) - the Lorem Ipsum for photos - for the revolving placeholder images.
 
 ## Frontispiece
 
-Buddy Holly and The Crickets performing "That'll Be The Day" [Still from broadcast]. The Ed Sullivan Show. CBS, December 1, 1957.
+Randomized image from Lorem Ipsum.
