@@ -101,82 +101,72 @@ def get_runs_initialized(handler, today):
         - Locks Index to 5 or 6 columns
     """
 
-    # This IS the first run
-
-    # ######################################
-    #
     # HANDLE ENVIRONMENT VARIABLES
-    #
-    # ######################################
-    seq_start_env = repr(today).replace("'", '"')
-    seq_notation_env = int(os.environ.get("SEQ_NOTATION", 0))
-    nb_env = int(os.environ.get("NB", 0))
-    nb_name_env = os.environ.get("NB_NAME", "NB")
+    env_vars = {
+        "seq_start": repr(today).replace("'", '"'),
+        "nb": int(os.environ.get("NB", 0)),
+        "nb_name": os.environ.get("NB_NAME", "NB"),
+        "seq_notation": int(os.environ.get("SEQ_NOTATION", 0)),
+    }
 
-    # ######################################
-    #
     # HANDLE CONFIG.PY
-    #
-    # ######################################
-
     with open(f"{CONFIG_DIR}/config.py", "r", encoding="utf-8") as file:
         lines = file.readlines()
 
     for i, line in enumerate(lines):
 
-        if line.startswith("SEQ_NOTATION="):
-            lines[i] = f"SEQ_NOTATION={seq_notation_env}\n"
-
         if line.startswith("SEQ_START="):
-            lines[i] = f"SEQ_START={seq_start_env}\n"
+            lines[i] = f"SEQ_START={env_vars["seq_start"]}\n"
 
         if line.startswith("NB="):
-            lines[i] = f"NB={nb_env}\n"
+            lines[i] = f"NB={env_vars["nb"]}\n"
 
         if line.startswith("NB_NAME="):
-            lines[i] = f'NB_NAME="{nb_name_env}"\n'
+            lines[i] = f'NB_NAME="{env_vars["nb_name"]}"\n'
+
+        if line.startswith("SEQ_NOTATION="):
+            lines[i] = f"SEQ_NOTATION={env_vars["seq_notation"]}\n"
 
     with open(f"{CONFIG_DIR}/config.py", "w", encoding="utf-8") as file:
         file.writelines(lines)
 
-
-    # ######################################
-    #
     # HANDLE EXTRA COLUMN (aka NB)
-    #
-    # ######################################
-    if nb_env == 1:
+    if env_vars["nb"] == 1:
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - README
-        start_comment = "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->"
-        end_comment = "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+        index_block = {
+            "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
+            "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+        }
 
         start_line_readme = None
         end_line_readme = None
 
-        contents_header = f"| Day   | Title   | Solution   | Site   | Difficulty   | {nb_name_env}   |"
-        contents_sep = f"| ----- | ------- | ---------- | ------ | ------------ | { '-' * (len(nb_name_env) + 2) } |"
+        index_header = {
+            "labels": f"| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |",
+            "sep": f"| ----- | ------- | ---------- | ------ | ------------ | { '-' * (len(env_vars["nb_name"]) + 2) } |"
+        }
 
         with open("README.md", "r", encoding="utf-8") as file:
             lines = file.readlines()
 
         for i in range(len(lines)-1, -1, -1):
 
-            if start_comment in lines[i]:
+            if index_block["start"] in lines[i]:
                 start_line_readme = i
 
-            if end_comment in lines[i]:
+            if index_block["end"] in lines[i]:
                 end_line_readme = i
 
         for j in range(start_line_readme + 1, end_line_readme):
 
             if j == start_line_readme + 1:
 
-                lines[j] = f"{contents_header}\n"
+                lines[j] = f"{index_header["labels"]}\n"
 
             if j == start_line_readme + 2:
 
-                lines[j] = f"{contents_sep}\n"
+                lines[j] = f"{index_header["sep"]}\n"
 
             if j > start_line_readme + 2:
 
@@ -190,13 +180,13 @@ def get_runs_initialized(handler, today):
         with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding="utf-8") as file:
             lines_template = file.readlines()
 
-        lines_template[29] = f"## {nb_name_env}\n"
+        lines_template[29] = f"## {env_vars["nb_name"]}\n"
         lines_template[32] = "\n"
 
         with open(f"{TEMPLATES_DIR}/solution.txt", "w", encoding="utf-8") as file:
             file.writelines(lines_template)
 
-        print(f"Extra column selected: {nb_name_env}")
+        print(f"Extra column selected: {env_vars["nb_name"]}")
 
 
     # ######################################
@@ -204,12 +194,12 @@ def get_runs_initialized(handler, today):
     # UPDATE DICTS
     #
     # ######################################
-    handler.update_value("config_base", "seq_start_loc", seq_start_env)
-    handler.update_value("config_base", "nb_loc", nb_env)
-    handler.update_value("config_base", "nb_name_loc", nb_name_env)
-    handler.update_value("config_base", "seq_notation_loc", seq_notation_env)
+    handler.update_value("config_base", "seq_start_loc", env_vars["seq_start"])
+    handler.update_value("config_base", "nb_loc", env_vars["nb"])
+    handler.update_value("config_base", "nb_name_loc", env_vars["nb_name"])
+    handler.update_value("config_base", "seq_notation_loc", env_vars["seq_notation"])
 
-    handler.update_value("config_cols_widths", "nb", len(nb_name_env) + 2)
+    handler.update_value("config_cols_widths", "nb", len(env_vars["nb_name"]) + 2)
 
     print("First run initialized")
 
