@@ -102,8 +102,8 @@ def get_runs_initialized(handler, today):
     #
     # ######################################
     seq_start_env = repr(today).replace("'", '"')
-    seq_notation_env = os.environ.get("SEQ_NOTATION", 0)
-    nb_env = os.environ.get("NB", 0)
+    seq_notation_env = int(os.environ.get("SEQ_NOTATION", 0))
+    nb_env = int(os.environ.get("NB", 0))
     nb_name_env = os.environ.get("NB_NAME", "NB")
 
     # ######################################
