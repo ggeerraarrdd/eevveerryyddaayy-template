@@ -213,26 +213,42 @@ def get_runs_initialized(handler: PackageHandler, today: datetime):
     return results
 
 
-def get_runs_started(handler, package_list, today):
+def get_runs_started(handler: PackageHandler, package_list: list[str], today: datetime):
     """
-    Sets up first and regular runs by processing project information and updating
-    all dictionaries except config_cols_widths.
-        
+    Sets up first and regular runs by processing project information and 
+    updating dictionaries.
+
+    Args:
+        handler (PackageHandler): Handler object for managing package data
+        package_list (list[str]): List containing project information from Jupyter Notebook form
+        today (datetime): Current date for timestamp generation
+
+    Returns:
+        int: 1 if successful
+
+    Raises:
+        ValueError: TD
+    
+    Note:
+        -- package_list validation done elsewhere
+        -- Does not update config_cols_widths dictionary
+
     Prerequisites:
-        - Valid package_list with all required elements from Jupyter Notebook form
         - Properly initialized PackageHandler
+        - Valid package_list with all required elements from Jupyter Notebook form
     """
 
-    url = package_list[0]
-    title = package_list[1]
-    site = package_list[2]
-    difficulty = package_list[3]
-    problem = package_list[4]
-    submitted_solution = package_list[5]
-    site_solution = package_list[6]
-    notes = package_list[7]
-    nb = package_list[8]
-
+    new_package = {
+        "url": package_list[0],
+        "title": package_list[1],
+        "site": package_list[2],
+        "difficulty": package_list[3],
+        "problem": package_list[4],
+        "submitted_solution": package_list[5],
+        "site_solution": package_list[6],
+        "notes": package_list[7],
+        "nb": package_list[8]
+    }
 
     # Get sequence
     seq_notation_loc = handler.get_value("config_base", "seq_notation_loc")
@@ -275,7 +291,7 @@ def get_runs_started(handler, package_list, today):
 
 
     # Get filename
-    filename = title.lower()
+    filename = new_package["title"].lower()
     filename = re.sub(r"[^a-z0-9\s-]", "", filename)
     filename = filename.replace(" ", "_")
     filename = filename.replace("-", "_")
@@ -289,32 +305,32 @@ def get_runs_started(handler, package_list, today):
     # ######################################
     # Update package
     handler.update_value("package", "day", day)
-    handler.update_value("package", "url", url)
-    handler.update_value("package", "title", title)
-    handler.update_value("package", "site", site)
-    handler.update_value("package", "difficulty", difficulty)
-    handler.update_value("package", "problem", problem)
-    handler.update_value("package", "submitted_solution", submitted_solution)
-    handler.update_value("package", "site_solution", site_solution)
-    handler.update_value("package", "notes", notes)
-    handler.update_value("package", "nb", nb)
+    handler.update_value("package", "url", new_package["url"])
+    handler.update_value("package", "title", new_package["title"])
+    handler.update_value("package", "site", new_package["site"])
+    handler.update_value("package", "difficulty", new_package["difficulty"])
+    handler.update_value("package", "problem", new_package["problem"])
+    handler.update_value("package", "submitted_solution", new_package["submitted_solution"])
+    handler.update_value("package", "site_solution", new_package["site_solution"])
+    handler.update_value("package", "notes", new_package["notes"])
+    handler.update_value("package", "nb", new_package["nb"])
     handler.update_value("package", "filename", filename)
 
     # Update entry_data
     handler.update_value("entry_data", "day", day)
-    handler.update_value("entry_data", "title", f"[{title}]({url})")
+    handler.update_value("entry_data", "title", f"[{new_package["title"]}]({new_package["url"]})")
     handler.update_value("entry_data", "solution", f"[Solution](solutions/{filename})")
-    handler.update_value("entry_data", "site", site)
-    handler.update_value("entry_data", "difficulty", difficulty)
-    handler.update_value("entry_data", "nb", nb)
+    handler.update_value("entry_data", "site", new_package["site"])
+    handler.update_value("entry_data", "difficulty", new_package["difficulty"])
+    handler.update_value("entry_data", "nb", new_package["nb"])
 
     # Update entry_data_widths
     handler.update_value("entry_data_widths", "day", len(day) + 2)
-    handler.update_value("entry_data_widths", "title", len(f"[{title}]({url}") + 2)
+    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]}") + 2)
     handler.update_value("entry_data_widths", "solution", len(f"[Solution](solutions/{filename})") + 2)
-    handler.update_value("entry_data_widths", "site", len(site) + 2)
-    handler.update_value("entry_data_widths", "difficulty", len(difficulty) + 2)
-    handler.update_value("entry_data_widths", "nb", len(nb) + 2)
+    handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
+    handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
+    handler.update_value("entry_data_widths", "nb", len(new_package["nb"]) + 2)
 
     return 1
 
