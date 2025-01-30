@@ -17,8 +17,6 @@ import os
 import re
 from datetime import datetime, timedelta
 
-
-
 # Local
 from .config import SOLUTIONS_DIR
 from .config import CONFIG_DIR
@@ -440,7 +438,20 @@ def get_runs_implemented(handler: PackageHandler) -> int:
 
 def get_runs_default(handler, url, title, site, difficulty, problem, submitted_solution, site_solution, notes, nb, today):
     """
-    TD
+    Process form inputs and coordinate execution flow by passing values to specialized functions.
+    Acts as a coordinator between form submission and data processing pipeline.
+
+    Args:
+        TD
+
+    Returns:
+        None: Prints "Done" on completion
+
+    Flow:
+        1. Validates and cleans input strings
+        2. Initiates run configuration process
+        3. Implements run settings
+        4. Updates configuration columns
     """
 
     if nb is None:
