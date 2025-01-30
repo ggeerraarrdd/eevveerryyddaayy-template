@@ -88,7 +88,7 @@ def get_runs_validated(handler: PackageHandler) -> bool:
     return results
 
 
-def get_runs_initialized(handler: PackageHandler, today: datetime):
+def get_runs_initialized(handler: PackageHandler, today: datetime) -> int:
     """
     Initializes the project for first run, setting up necessary user configurations.
 
@@ -213,7 +213,7 @@ def get_runs_initialized(handler: PackageHandler, today: datetime):
     return results
 
 
-def get_runs_started(handler: PackageHandler, package_list: list[str], today: datetime):
+def get_runs_started(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
     """
     Sets up first and regular runs by processing project information and 
     updating dictionaries.
@@ -229,9 +229,14 @@ def get_runs_started(handler: PackageHandler, package_list: list[str], today: da
     Raises:
         ValueError: TD
     
+    Updates:
+        - handler.package: Core project information and metadata
+        - handler.entry_data: Formatted data for display
+        - handler.entry_data_widths: Column width calculations
+
     Note:
         -- package_list validation done elsewhere
-        -- Does not update config_cols_widths dictionary
+        -- Does not update handler.config_cols_widths dictionary
 
     Prerequisites:
         - Properly initialized PackageHandler
@@ -335,13 +340,26 @@ def get_runs_started(handler: PackageHandler, package_list: list[str], today: da
     return 1
 
 
-def get_runs_implemented(handler):
+def get_runs_implemented(handler: PackageHandler) -> int:
     """
     Processes new entries by creating file and updating Index.
 
+    Args:
+        handler (PackageHandler): Handler object for managing package data
+
+    Returns:
+        int: 1 if successful
+
+    Updates:
+        - Creates new solution file based on package data
+        - Updates config_cols_widths if new widths are larger
+        - Adds new entry line to README.md index
+        - Updates existing index lines if column widths changed
+
     Prerequisites:
-        - Propery updated dictionaries
         - Properly initialized PackageHandler
+        - Properly updated dictionaries (package, entry_data, entry_data_widths)
+        - Valid README.md with index block markers
     """
 
     # ######################################
@@ -355,9 +373,8 @@ def get_runs_implemented(handler):
     # ######################################
     change_old_lines = 0
     for key, value in handler.get_dictionary("config_cols_widths").items():
-        config_value = value
         new_value = handler.get_dictionary("entry_data_widths")[key]
-        if config_value < new_value:
+        if value < new_value:
             handler.update_value("config_cols_widths", key, new_value)
             change_old_lines = 1
 
@@ -366,63 +383,56 @@ def get_runs_implemented(handler):
     # CREATE NEW LINE
     # ######################################
     if handler.get_value("entry_data", "nb"):
-
         handler.update_value("entry_data", "nb", "")
 
-    new_entry = get_target_line_updated(handler.get_dictionary("entry_data"), 
+    new_entry = get_target_line_updated(handler.get_dictionary("entry_data"),
                                         handler.get_dictionary("config_cols_widths"))
 
 
     # ######################################
     # GET TARGET LINES FROM README
     # ######################################
-    start_comment = "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->"
-    end_comment = "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
-    with open("README.md", "r", encoding='utf-8') as file:
+    index_block = {
+        "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
+        "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+    }
+
+    with open("README.md", "r+", encoding='utf-8') as file:
         lines = file.readlines()
 
         start_line = None
         end_line = None
 
+        # GET START AND END LINES OF INDEX
         for i, line in enumerate(lines):
-            if start_comment in line:
+            if index_block["start"] in line:
                 start_line = i  # Line numbers start from 1
-            if end_comment in line:
+            if index_block["end"] in line:
                 end_line = i
 
 
-    # ######################################
-    # UPDATE TARGET LINES (if needed)
-    # ######################################
-    if change_old_lines == 1:
-
-        for i in range(start_line + 1, end_line):
-
-            line = lines[i]
-
-            # Convert line (str) to data (dict)
-            target_line_data = get_target_line_dict(line)
+        # UPDATE TARGET LINES (if needed)
+        if change_old_lines == 1:
 
             # Process each line between start_line and end_line
-            line_updated = get_target_line_updated(target_line_data, 
-                                                   handler.get_dictionary("config_cols_widths"))
+            for i in range(start_line + 1, end_line):
 
-            # Replace the original line with the updated one
-            lines[i] = f"{line_updated}\n"
+                # Convert target line (str) to data (dict)
+                target_line_data = get_target_line_dict(lines[i])
 
+                # Update target line
+                line_updated = get_target_line_updated(target_line_data,
+                                                       handler.get_dictionary("config_cols_widths"))
 
-    # ######################################
-    # INSERT NEW LINE TO LINES
-    # ######################################
-    lines.insert(end_line, f"{new_entry}\n")
+                # Replace the original line with the updated one
+                lines[i] = f"{line_updated}\n"
 
+        # INSERT NEW LINE TO LINES
+        lines.insert(end_line, f"{new_entry}\n")
 
-    # ######################################
-    # WRITE LINES BACK TO README
-    # ######################################
-    # Write the updated content back to the file
-    with open("README.md", "w", encoding='utf-8') as file:
+        file.seek(0)
         file.writelines(lines)
+        file.truncate()
 
 
     return 1
