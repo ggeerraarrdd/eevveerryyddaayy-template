@@ -23,12 +23,12 @@ from datetime import datetime, timedelta
 from .config import SOLUTIONS_DIR
 from .config import CONFIG_DIR
 from .config import TEMPLATES_DIR
-
 from .helpers import clean_strings
 from .helpers import get_files_created
 from .helpers import get_target_line_dict
 from .helpers import get_target_line_updated
 from .helpers import get_config_columns_updated
+from .helpers import PackageHandler
 
 
 
@@ -39,23 +39,30 @@ from .helpers import get_config_columns_updated
 
 
 
-
-
-
-
-def get_runs_validated(handler):
+def get_runs_validated(handler : PackageHandler) -> bool:
     """
     Validates if this is the first run or a regular run of the project.
-            
-    Prerequisites:
-        - Config directory must exist
-        - Solutions directory must be accessible
-    
+
+    Args:
+        handler (PackageHandler): Package handler instance containing configuration
+
+    Returns:
+        bool: True if this is first run (no files and no SEQ_START value),
+              False if regular run (files exist and SEQ_START set),
+
+    Raises:
+        ValueError: If project is in an invalid state regarding files and SEQ_START
+
     Side Effects:
         - Creates Solution directory if missing
+    
+    Prerequisites:
+        - Config directory must exist
+        - Solutions directory must be accessible, if exists
     """
 
     seq_start_loc = handler.get_value("config_base", "seq_start_loc")
+
     # Create solutions directory if it doesn't exist
     if not os.path.exists(SOLUTIONS_DIR):
         os.makedirs(SOLUTIONS_DIR)
@@ -63,19 +70,19 @@ def get_runs_validated(handler):
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
 
+        # First run case
         if files and seq_start_loc != "":
-            file_last = files[-1]
             run_validation = False
 
+        # Regular run
         elif not files and seq_start_loc == "":
-            file_last = None
             run_validation = True
 
+        # Invalid project state
         else:
-            file_last = None
-            run_validation = None
+            raise ValueError("Invalid project state: Either (1) Solutions dir contains file(s) and SEQ_START value set or (2) Solutions dir is empty and SEQ_START value set to empty string.")
 
-        results = run_validation, file_last
+    results = run_validation
 
 
     return results
@@ -212,7 +219,7 @@ def get_runs_initialized(handler, today):
     return results
 
 
-def get_runs_started(handler, package_list, today, file_last):
+def get_runs_started(handler, package_list, today):
     """
     Sets up first and regular runs by processing project information and updating
     all dictionaries except config_cols_widths.
@@ -236,7 +243,12 @@ def get_runs_started(handler, package_list, today, file_last):
     # Get sequence
     seq_notation_loc = handler.get_value("config_base", "seq_notation_loc")
 
-    if file_last:
+    with os.scandir(SOLUTIONS_DIR) as entries:
+        files = sorted(entry.name for entry in entries)
+
+    if files:
+
+        file_last = files[-1]
 
         if seq_notation_loc == 0:
 
@@ -406,7 +418,7 @@ def get_runs_implemented(handler):
     return 1
 
 
-def get_runs_default(handler, url, title, site, difficulty, problem, submitted_solution, site_solution, notes, nb, today, file_last):
+def get_runs_default(handler, url, title, site, difficulty, problem, submitted_solution, site_solution, notes, nb, today):
     """
     TD
     """
@@ -421,7 +433,7 @@ def get_runs_default(handler, url, title, site, difficulty, problem, submitted_s
     # ######################################
     # GET RUNS STARTED (FIRST OR REGULAR)
     # ######################################
-    get_runs_started(handler, package_list, today, file_last)
+    get_runs_started(handler, package_list, today)
 
 
     # ######################################

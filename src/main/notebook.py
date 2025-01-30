@@ -163,7 +163,7 @@ def get_form_section_main(handler):
     return section_main
 
 
-def get_form_section_button(handler, today, file_last):
+def get_form_section_button(handler, today):
     """
     TD
     """
@@ -197,8 +197,7 @@ def get_form_section_button(handler, today, file_last):
             site_solution = site_solution_widget.value,
             notes = notes_widget.value,
             nb = nb_widget.value,
-            today = today,
-            file_last = file_last
+            today = today
         )
 
 
@@ -224,7 +223,7 @@ def get_form():
     # ######################################
     # GET RUNS VALIDATED (FIRST OR REGULAR)
     # ######################################
-    is_run_first, file_last = get_runs_validated(handler)
+    is_run_first = get_runs_validated(handler)
 
 
 
@@ -258,7 +257,7 @@ def get_form():
 
     head = get_form_section_head()
     main = get_form_section_main(handler)
-    button = get_form_section_button(handler, today, file_last)
+    button = get_form_section_button(handler, today)
 
     full_section = widgets.VBox([head, main, button], layout=container_layout)
 
