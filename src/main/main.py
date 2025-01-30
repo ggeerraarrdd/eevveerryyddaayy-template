@@ -39,7 +39,7 @@ from .helpers import PackageHandler
 
 
 
-def get_runs_validated(handler : PackageHandler) -> bool:
+def get_runs_validated(handler: PackageHandler) -> bool:
     """
     Validates if this is the first run or a regular run of the project.
 
@@ -88,17 +88,24 @@ def get_runs_validated(handler : PackageHandler) -> bool:
     return results
 
 
-def get_runs_initialized(handler, today):
+def get_runs_initialized(handler: PackageHandler, today: datetime):
     """
     Initializes the project for first run, setting up necessary user configurations.
+
+    Args:
+        handler (PackageHandler): Package handler instance for managing configurations
+        today (datetime): Current date used for initialization
+
+    Returns:
+        int: 1 if initialization successful
+
+    Side Effects:
+        - Prevents future initialization by setting SEQ_START
+        - Locks Index to 5 or 6 columns
 
     Prerequisites:
         - Solutions directory must be empty
         - SEQ_START must have empty string default value
-
-    Side Effects:
-        - Preventing future initialization
-        - Locks Index to 5 or 6 columns
     """
 
     # HANDLE ENVIRONMENT VARIABLES
@@ -109,35 +116,38 @@ def get_runs_initialized(handler, today):
         "seq_notation": int(os.environ.get("SEQ_NOTATION", 0)),
     }
 
+
     # HANDLE CONFIG.PY
-    with open(f"{CONFIG_DIR}/config.py", "r", encoding="utf-8") as file:
+    with open(f"{CONFIG_DIR}/config.py", "r+", encoding="utf-8") as file:
         lines = file.readlines()
 
-    for i, line in enumerate(lines):
+        for i, line in enumerate(lines):
 
-        if line.startswith("SEQ_START="):
-            lines[i] = f"SEQ_START={env_vars["seq_start"]}\n"
+            if line.startswith("SEQ_START="):
+                lines[i] = f"SEQ_START={env_vars["seq_start"]}\n"
 
-        if line.startswith("NB="):
-            lines[i] = f"NB={env_vars["nb"]}\n"
+            if line.startswith("NB="):
+                lines[i] = f"NB={env_vars["nb"]}\n"
 
-        if line.startswith("NB_NAME="):
-            lines[i] = f'NB_NAME="{env_vars["nb_name"]}"\n'
+            if line.startswith("NB_NAME="):
+                lines[i] = f'NB_NAME="{env_vars["nb_name"]}"\n'
 
-        if line.startswith("SEQ_NOTATION="):
-            lines[i] = f"SEQ_NOTATION={env_vars["seq_notation"]}\n"
+            if line.startswith("SEQ_NOTATION="):
+                lines[i] = f"SEQ_NOTATION={env_vars["seq_notation"]}\n"
 
-    with open(f"{CONFIG_DIR}/config.py", "w", encoding="utf-8") as file:
+        file.seek(0)
         file.writelines(lines)
+        file.truncate()
+
 
     # HANDLE EXTRA COLUMN (aka NB)
     if env_vars["nb"] == 1:
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - README
         index_block = {
-            "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
-            "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
-        }
+                "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
+                "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+            }
 
         start_line_readme = None
         end_line_readme = None
@@ -147,53 +157,47 @@ def get_runs_initialized(handler, today):
             "sep": f"| ----- | ------- | ---------- | ------ | ------------ | { '-' * (len(env_vars["nb_name"]) + 2) } |"
         }
 
-        with open("README.md", "r", encoding="utf-8") as file:
+        with open("README.md", "r+", encoding="utf-8") as file:
             lines = file.readlines()
 
-        for i in range(len(lines)-1, -1, -1):
+            for i in range(len(lines)-1, -1, -1):
 
-            if index_block["start"] in lines[i]:
-                start_line_readme = i
+                if index_block["start"] in lines[i]:
+                    start_line_readme = i
 
-            if index_block["end"] in lines[i]:
-                end_line_readme = i
+                if index_block["end"] in lines[i]:
+                    end_line_readme = i
 
-        for j in range(start_line_readme + 1, end_line_readme):
+            for j in range(start_line_readme + 1, end_line_readme):
 
-            if j == start_line_readme + 1:
+                if j == start_line_readme + 1:
+                    lines[j] = f"{index_header["labels"]}\n"
 
-                lines[j] = f"{index_header["labels"]}\n"
+                if j == start_line_readme + 2:
+                    lines[j] = f"{index_header["sep"]}\n"
 
-            if j == start_line_readme + 2:
+                if j > start_line_readme + 2:
+                    lines[j] = ""
 
-                lines[j] = f"{index_header["sep"]}\n"
-
-            if j > start_line_readme + 2:
-
-                lines[j] = ""
-
-        with open("README.md", "w", encoding="utf-8") as file:
+            file.seek(0)
             file.writelines(lines)
-
+            file.truncate()
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
         with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding="utf-8") as file:
             lines_template = file.readlines()
 
-        lines_template[29] = f"## {env_vars["nb_name"]}\n"
-        lines_template[32] = "\n"
+            lines_template[29] = f"## {env_vars["nb_name"]}\n"
+            lines_template[32] = "\n"
 
-        with open(f"{TEMPLATES_DIR}/solution.txt", "w", encoding="utf-8") as file:
-            file.writelines(lines_template)
+            file.seek(0)
+            file.writelines(lines)
+            file.truncate()
 
         print(f"Extra column selected: {env_vars["nb_name"]}")
 
 
-    # ######################################
-    #
     # UPDATE DICTS
-    #
-    # ######################################
     handler.update_value("config_base", "seq_start_loc", env_vars["seq_start"])
     handler.update_value("config_base", "nb_loc", env_vars["nb"])
     handler.update_value("config_base", "nb_name_loc", env_vars["nb_name"])
