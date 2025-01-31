@@ -210,7 +210,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     return 1
 
 
-def start_runs(handler: PackageHandler, package_list: list[str], today: str) -> int:
+def start_runs(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
     """
     Sets up first and regular runs by processing project information and 
     updating dictionaries.
@@ -269,9 +269,17 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: str) -> 
 
         elif seq_notation_loc == 1:
 
-            file_counter = datetime.strptime(file_last[:10], '%Y-%m-%d')
-            file_counter = file_counter + timedelta(days=1)
-            day = file_counter.strftime('%Y-%m-%d')
+            file_counter = datetime.strptime(file_last[:10], "%Y-%m-%d")
+
+            if file_counter == today:
+                print("Note: You have submitted more than 1 entry today.")
+                day = file_counter.strftime("%Y-%m-%d")
+            elif file_counter > today:
+                file_counter = file_counter + timedelta(days=1)
+                day = file_counter.strftime("%Y-%m-%d")
+            else:
+                print("Note: Invalid sequence. Processing not terminated.")
+                day = file_counter.strftime("%Y-%m-%d")
 
         else:
 
@@ -285,7 +293,7 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: str) -> 
 
         elif seq_notation_loc == 1:
 
-            day = today
+            day = today.strftime("%Y-%m-%d")
 
         else:
 

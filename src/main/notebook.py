@@ -177,7 +177,7 @@ def create_form_main(handler: PackageHandler) -> widgets.VBox:
     return section_main
 
 
-def create_form_button(handler: PackageHandler, today: str) -> widgets.VBox:
+def create_form_button(handler: PackageHandler, today: datetime) -> widgets.VBox:
     """
     Creates the form submission button section with validation logic.
 
@@ -188,7 +188,7 @@ def create_form_button(handler: PackageHandler, today: str) -> widgets.VBox:
 
     Args:
         handler: PackageHandler instance for configuration management.
-        today: Current date string in YYYY-MM-DD format.
+        today: datetime object representing current date (time component stripped).
 
     Returns:
         VBox: A vertical box container with the submission button.
@@ -282,7 +282,8 @@ def form() -> widgets.VBox:
     # ######################################
     # GET RUNS INITIALIZED (FIRST)
     # ######################################
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now()
+    today = today.replace(hour=0, minute=0, second=0, microsecond=0)
 
     if is_run_first:
 
