@@ -154,22 +154,22 @@ def create_form_main(handler: PackageHandler) -> widgets.VBox:
     )
 
     sections = [
-        ('URL', url_widget),
-        ('Title', title_widget),
-        ('Site', site_widget),
-        ('Difficulty', difficulty_widget),
-        ('Problem', problem_widget),
-        ('Your Solution', submitted_solution_widget),
-        ('Site Solution', site_solution_widget),
-        ('Notes', notes_widget)
+        ("URL", url_widget),
+        ("Title", title_widget),
+        ("Site", site_widget),
+        ("Difficulty", difficulty_widget),
+        ("Problem", problem_widget),
+        ("Your Solution", submitted_solution_widget),
+        ("Site Solution", site_solution_widget),
+        ("Notes", notes_widget)
     ]
 
     if handler.get_value("config_base", "nb_loc") == 1:
-        sections.append(('NB', nb_widget))
+        sections.append((handler.get_value("config_base", "nb_name_loc"), nb_widget))
 
     section_list = []
     for heading, widget in sections:
-        label = widgets.HTML(value=f'<b>{heading}</b>', layout=label_layout)
+        label = widgets.HTML(value=f"<b>{heading}</b>", layout=label_layout)
         section_list.append(widgets.VBox([label, widget], layout=container_layout))
 
     section_main = widgets.VBox(section_list, layout=container_layout)
@@ -218,14 +218,15 @@ def create_form_button(handler: PackageHandler, today: str) -> widgets.VBox:
 
         for key, value in form_inputs.items():
 
-            key_label = key.replace("_", " ").title()
+            if key == "nb":
+                key = handler.get_value("config_base", "nb_name_loc")
+                key_label = key.replace("_", " ").title()
+            else:
+                key_label = key.replace("_", " ").title()
 
             if not isinstance(value, str):
-
                 return False, f"Field {key_label} must be a string"
-
             if not value.strip():
-
                 return False, f"Field {key_label} cannot be empty"
 
 
