@@ -1,4 +1,4 @@
-# SQL Everyday \#{{ day }}
+# [ ] Everyday \#{{ day }}
 
 ## {{ title }}
 
