@@ -13,9 +13,10 @@ Author: Gerard Bul-lalayao
 """
 
 # Python Standard Library
+from datetime import datetime, timedelta
+import json
 import os
 import re
-from datetime import datetime, timedelta
 
 # Local
 from .config import SOLUTIONS_DIR
@@ -25,7 +26,6 @@ from .helpers import clean_strings
 from .helpers import get_files_created
 from .helpers import get_target_line_dict
 from .helpers import get_target_line_updated
-from .helpers import get_config_columns_updated
 from .helpers import PackageHandler
 
 
@@ -205,10 +205,8 @@ def get_runs_initialized(handler: PackageHandler, today: datetime) -> int:
 
     print("First run initialized")
 
-    results = 1
 
-
-    return results
+    return 1
 
 
 def get_runs_started(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
@@ -436,6 +434,40 @@ def get_runs_implemented(handler: PackageHandler) -> int:
     return 1
 
 
+def close_runs(column_widths: dict) -> int:
+    """
+    Updates the COLS_WIDTH config in columns.py with new data.
+    
+    Args:
+        column_widths (dict): Dictionary containing column width configurations 
+    
+    Returns:
+        int: Returns 1 on successful completion
+    """
+
+    with open(f"{CONFIG_DIR}/columns.py", 'r+', encoding='utf-8') as file:
+        lines = file.readlines()
+
+        line_target = None
+        for i, line in enumerate(lines):
+            if "COLS_WIDTH = {" in line:
+                line_target = i
+                break
+
+        del lines[line_target:]
+
+        data = f"COLS_WIDTH = {json.dumps(column_widths, indent=4)}\n"
+
+        lines[line_target:line_target] = data.splitlines(True)
+
+        file.seek(0)
+        file.writelines(lines)
+        file.truncate()
+
+
+    return 1
+
+
 def get_runs_default(handler: PackageHandler, today: datetime, data: dict) -> None:
     """
     Process form inputs and coordinate execution flow by passing values to specialized functions.
@@ -472,21 +504,21 @@ def get_runs_default(handler: PackageHandler, today: datetime, data: dict) -> No
 
 
     # ######################################
-    # GET RUNS STARTED (FIRST OR REGULAR)
+    # RUNS - STARTED (FIRST OR REGULAR)
     # ######################################
     get_runs_started(handler, new_package, today)
 
 
     # ######################################
-    # GET RUNS IMPLEMENTED
+    # RUNS - IMPLEMENT
     # ######################################
     get_runs_implemented(handler)
 
 
     # ######################################
-    # GET RUNS CLOSED
+    # RUNS - CLOSE
     # ######################################
-    get_config_columns_updated(handler.get_dictionary("config_cols_widths"))
+    close_runs(handler.get_dictionary("config_cols_widths"))
 
 
 

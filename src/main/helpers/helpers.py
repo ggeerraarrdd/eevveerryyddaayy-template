@@ -1,12 +1,8 @@
-# Python Standard Library
-import json
-
 # Third-Party Libraries
 from jinja2 import Template
 
 # Local
 from src.main.config import NB
-from src.main.config import CONFIG_DIR
 from src.main.config import TEMPLATES_DIR
 
 
@@ -126,26 +122,3 @@ def get_target_line_updated(data, widths):
     results = target_line
 
     return results
-
-
-def get_config_columns_updated(data):
-
-    with open(f"{CONFIG_DIR}/columns.py", 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-
-    line_target = None
-    for i, line in enumerate(lines):
-        if "COLS_WIDTH = {" in line:
-            line_target = i
-            break
-
-    del lines[line_target:]
-
-    data = f"COLS_WIDTH = {json.dumps(data, indent=4)}\n"
-
-    lines[line_target:line_target] = data.splitlines(True)
-
-    with open(f"{CONFIG_DIR}/columns.py", 'w', encoding='utf-8') as file:
-        file.writelines(lines)
-            
-    return 1
