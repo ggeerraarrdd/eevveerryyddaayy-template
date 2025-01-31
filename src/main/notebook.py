@@ -1,5 +1,9 @@
 """
-TD
+Form interface for Jupyter notebook.
+
+Creates and manages an interactive form using ipywidgets to collect, validate
+and process data. The form interface is specifically designed for use within a 
+Jupyter notebook environment.
 """
 
 # Python Standard Library
@@ -97,9 +101,12 @@ page_title_widget = widgets.Text(
 
 
 
-def get_form_section_head():
+def create_form_head() -> widgets.VBox:
     """
-    TD
+    Creates the header section of the form.
+
+    Returns:
+        VBox: A vertical box container with the form header elements.
     """
     label_layout = widgets.Layout(
         width='50%',
@@ -123,10 +130,17 @@ def get_form_section_head():
     return section_head
 
 
-def get_form_section_main(handler):
+def create_form_main(handler: PackageHandler) -> widgets.VBox:
     """
-    TD
+    Creates the main section of the form with input fields.
+
+    Args:
+        handler: PackageHandler instance for configuration management.
+
+    Returns:
+        VBox: A vertical box container with all form input fields.
     """
+
     label_layout = widgets.Layout(
         width='50%',
         margin='0'
@@ -163,9 +177,21 @@ def get_form_section_main(handler):
     return section_main
 
 
-def get_form_section_button(handler, today):
+def create_form_button(handler: PackageHandler, today: str) -> widgets.VBox:
     """
-    TD
+    Creates the form submission button section with validation logic.
+
+    This function creates the button UI element. It also includes nested functions 
+    that are triggered when the button is clicked:
+    - validate_form_data(): Validates all form inputs
+    - execute_runs(): Triggers handle_runs_default() in main
+
+    Args:
+        handler: PackageHandler instance for configuration management.
+        today: Current date string in YYYY-MM-DD format.
+
+    Returns:
+        VBox: A vertical box container with the submission button.
     """
 
     container_layout = widgets.Layout(
@@ -206,7 +232,7 @@ def get_form_section_button(handler, today):
         return True, form_inputs
 
 
-    def create_solution_file(b):
+    def execute_runs(b):
 
         is_valid, form_inputs_validated = validate_form_data()
 
@@ -223,16 +249,20 @@ def get_form_section_button(handler, today):
 
 
     create_button = widgets.Button(description="Process Entry", tooltip="Processing...")
-    create_button.on_click(create_solution_file)
+    create_button.on_click(execute_runs)
     section_button = widgets.VBox([create_button], layout=container_layout)
 
 
     return section_button
 
 
-def get_form():
+def form() -> widgets.VBox:
     """
-    TD
+    Creates and returns the complete form interface.
+
+    Returns:
+        VBox: The complete form interface containing header, main input fields,
+              and submission button.
     """
 
     # ######################################
@@ -276,9 +306,9 @@ def get_form():
         width='100%'
     )
 
-    head = get_form_section_head()
-    main = get_form_section_main(handler)
-    button = get_form_section_button(handler, today)
+    head = create_form_head()
+    main = create_form_main(handler)
+    button = create_form_button(handler, today)
 
     full_section = widgets.VBox([head, main, button], layout=container_layout)
 

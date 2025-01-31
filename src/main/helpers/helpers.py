@@ -1,3 +1,7 @@
+"""
+TD
+"""
+
 # Third-Party Libraries
 from jinja2 import Template
 
@@ -19,7 +23,7 @@ def clean_strings(*args):
     results = []
     for arg in args:
         results.append(arg.strip("\n"))
-    
+
     return results
 
 
@@ -36,7 +40,7 @@ def get_files_created(data):
 
     with open(f"solutions/{data['filename']}", "w", encoding='utf-8') as file:
         file.write(filled_document)
-    
+
     return 1
 
 
@@ -52,13 +56,13 @@ def get_target_line_dict(line):
     }
 
     if NB == 0:
-    
+
         keys = list(data.keys())[:-1]  # Exclude 'nb'
-    
+
     elif NB == 1:
 
         keys = list(data.keys())
-    
+
     else:
 
         raise ValueError("Invalid configuration: TODO")
@@ -73,7 +77,7 @@ def get_target_line_dict(line):
     for i, key in enumerate(keys):
         if i < len(segments):
             data[key] = f"{segments[i]}"
-    
+
     results = data
 
     return results
@@ -82,39 +86,39 @@ def get_target_line_dict(line):
 def get_target_line_updated(data, widths):
 
     target_line = "|"
-        
+
     if NB == 0:
-        
+
         for key, value in data.items():
 
             if key != 'nb':  # Skip the 'nb' key
                 value_str = str(value)
                 is_second_line = all(char == "-" for char in value_str.strip())
                 diff = widths[key] - len(value_str)
-                
+
                 if is_second_line:
                     padding = '-' * diff
                 else:
                     padding = ' ' * diff
-                
+
                 target_line += f" {value_str}{padding} |"
-        
+
     elif NB == 1:
 
         for key, value in data.items():
-            
+
             value_str = str(value)
 
             is_second_line = value_str and all(char == "-" for char in value_str.strip())
             diff = widths[key] - len(value_str)
-            
+
             if is_second_line:
                 padding = '-' * diff
             else:
                 padding = ' ' * diff
-            
+
             target_line += f" {value_str}{padding} |"
-        
+
     else:
 
         raise ValueError("Invalid configuration: TODO")
