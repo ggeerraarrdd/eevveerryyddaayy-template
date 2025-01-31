@@ -390,7 +390,8 @@ def implement_runs(handler: PackageHandler) -> int:
     if handler.get_value("entry_data", "nb"):
         handler.update_value("entry_data", "nb", "")
 
-    new_entry = get_target_line_updated(handler.get_dictionary("entry_data"),
+    new_entry = get_target_line_updated(handler.get_value("config_base", "nb_loc"),
+                                        handler.get_dictionary("entry_data"),
                                         handler.get_dictionary("config_cols_widths"))
 
 
@@ -423,10 +424,12 @@ def implement_runs(handler: PackageHandler) -> int:
             for i in range(start_line + 1, end_line):
 
                 # Convert target line (str) to data (dict)
-                target_line_data = get_target_line_dict(lines[i])
+                target_line_data = get_target_line_dict(handler.get_value("config_base", "nb_loc"),
+                                                        lines[i])
 
                 # Update target line
-                line_updated = get_target_line_updated(target_line_data,
+                line_updated = get_target_line_updated(handler.get_value("config_base", "nb_loc"),
+                                                       target_line_data,
                                                        handler.get_dictionary("config_cols_widths"))
 
                 # Replace the original line with the updated one

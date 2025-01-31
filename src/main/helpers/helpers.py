@@ -9,7 +9,6 @@ from typing import Any, Dict, List
 from jinja2 import Template
 
 # Local
-from src.main.config import NB
 from src.main.config import TEMPLATES_DIR
 
 
@@ -64,7 +63,7 @@ def get_files_created(data: Dict[str, Any]) -> int:
     return 1
 
 
-def get_target_line_dict(line: str) -> Dict[str, str]:
+def get_target_line_dict(nb_loc, line: str) -> Dict[str, str]:
     """
     Parse a table line into a dictionary based on notebook configuration.
 
@@ -87,11 +86,11 @@ def get_target_line_dict(line: str) -> Dict[str, str]:
         "nb": "",
     }
 
-    if NB == 0:
+    if nb_loc == 0:
 
         keys = list(data.keys())[:-1]  # Exclude 'nb'
 
-    elif NB == 1:
+    elif nb_loc == 1:
 
         keys = list(data.keys())
 
@@ -115,7 +114,7 @@ def get_target_line_dict(line: str) -> Dict[str, str]:
     return results
 
 
-def get_target_line_updated(data: Dict[str, str], widths: Dict[str, int]) -> str:
+def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]) -> str:
     """
     Format a table line with proper padding based on column widths.
 
@@ -132,7 +131,7 @@ def get_target_line_updated(data: Dict[str, str], widths: Dict[str, int]) -> str
 
     target_line = "|"
 
-    if NB == 0:
+    if nb_loc == 0:
 
         for key, value in data.items():
 
@@ -148,7 +147,7 @@ def get_target_line_updated(data: Dict[str, str], widths: Dict[str, int]) -> str
 
                 target_line += f" {value_str}{padding} |"
 
-    elif NB == 1:
+    elif nb_loc == 1:
 
         for key, value in data.items():
 
