@@ -183,14 +183,14 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
             file.truncate()
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
-        with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding="utf-8") as file:
+        with open(f"{TEMPLATES_DIR}/solution.txt", "r+", encoding="utf-8") as file:
             lines_template = file.readlines()
 
             lines_template[29] = f"## {env_vars["nb_name"]}\n"
             lines_template[32] = "\n"
 
             file.seek(0)
-            file.writelines(lines)
+            file.writelines(lines_template)
             file.truncate()
 
         print(f"Extra column selected: {env_vars["nb_name"]}")
