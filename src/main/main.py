@@ -1,15 +1,16 @@
 """
-EEVVEERRYYDDAAYY Project Module
+EEVVEERRYYDDAAYY Project
 
-This module handles the core functionality for managing field values
-submitted through the form generated in notebook.py. 
+Main program file that coordinates core functionality for configuring settings, 
+managing form field values, and handling program flow. This file serves as 
+the central coordinator for:
 
-It provides classes and functions to:
-- Initialize and configure project settings
-- Process new entries
-- Manage project files and reference index
-
-Author: Gerard Bul-lalayao
+- Initializing and configuring project settings from environment variables
+- Setting up Index table structure and template files
+- Processing and validating new form entries
+- Managing project files and reference indices
+- Configuring first-time setup and user settings
+- Coordinating data flow between notebook interface and storage
 """
 
 # Python Standard Library
@@ -37,7 +38,7 @@ from .helpers import PackageHandler
 
 
 
-def get_runs_validated(handler: PackageHandler) -> bool:
+def validate_runs(handler: PackageHandler) -> bool:
     """
     Validates if this is the first run or a regular run of the project.
 
@@ -86,7 +87,7 @@ def get_runs_validated(handler: PackageHandler) -> bool:
     return results
 
 
-def get_runs_initialized(handler: PackageHandler, today: datetime) -> int:
+def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     """
     Initializes the project for first run, setting up necessary user configurations.
 
@@ -209,7 +210,7 @@ def get_runs_initialized(handler: PackageHandler, today: datetime) -> int:
     return 1
 
 
-def get_runs_started(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
+def start_runs(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
     """
     Sets up first and regular runs by processing project information and 
     updating dictionaries.
@@ -336,7 +337,7 @@ def get_runs_started(handler: PackageHandler, package_list: list[str], today: da
     return 1
 
 
-def get_runs_implemented(handler: PackageHandler) -> int:
+def implement_runs(handler: PackageHandler) -> int:
     """
     Processes new entries by creating file and updating Index.
 
@@ -468,7 +469,7 @@ def close_runs(column_widths: dict) -> int:
     return 1
 
 
-def get_runs_default(handler: PackageHandler, today: datetime, data: dict) -> None:
+def handle_runs_default(handler: PackageHandler, today: datetime, data: dict) -> None:
     """
     Process form inputs and coordinate execution flow by passing values to specialized functions.
     Acts as a coordinator between form submission and data processing pipeline.
@@ -504,15 +505,15 @@ def get_runs_default(handler: PackageHandler, today: datetime, data: dict) -> No
 
 
     # ######################################
-    # RUNS - STARTED (FIRST OR REGULAR)
+    # RUNS - START (FIRST OR REGULAR)
     # ######################################
-    get_runs_started(handler, new_package, today)
+    start_runs(handler, new_package, today)
 
 
     # ######################################
     # RUNS - IMPLEMENT
     # ######################################
-    get_runs_implemented(handler)
+    implement_runs(handler)
 
 
     # ######################################

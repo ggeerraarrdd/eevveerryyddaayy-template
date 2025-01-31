@@ -1,10 +1,10 @@
-from .main import get_runs_default
+from .main import handle_runs_default
 
 # Version information
 __version__ = "0.1.0"
 
 # Define what should be available when using "from src import *"
-__all__ = ["get_runs_default"]
+__all__ = ["handle_runs_default"]
 
 # Package-level configuration
 PACKAGE_NAME = "everyday-template"

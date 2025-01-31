@@ -10,8 +10,8 @@ import ipywidgets as widgets
 
 # Local
 from .helpers import PackageHandler
-from .main import get_runs_validated
-from .main import get_runs_initialized
+from .main import validate_runs
+from .main import initialize_runs
 
 
 
@@ -217,9 +217,9 @@ def get_form_section_button(handler, today):
         print(b.tooltip)
 
 
-        from src import get_runs_default # pylint: disable=import-outside-toplevel
+        from src import handle_runs_default # pylint: disable=import-outside-toplevel
 
-        get_runs_default(handler, today, form_inputs_validated)
+        handle_runs_default(handler, today, form_inputs_validated)
 
 
     create_button = widgets.Button(description="Process Entry", tooltip="Processing...")
@@ -244,7 +244,7 @@ def get_form():
     # ######################################
     # GET RUNS VALIDATED (FIRST OR REGULAR)
     # ######################################
-    is_run_first = get_runs_validated(handler)
+    is_run_first = validate_runs(handler)
 
 
 
@@ -255,7 +255,7 @@ def get_form():
 
     if is_run_first:
 
-        get_runs_initialized(handler, today)
+        initialize_runs(handler, today)
 
     elif not is_run_first:
 
