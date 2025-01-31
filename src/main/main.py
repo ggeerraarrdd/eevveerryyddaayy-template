@@ -274,7 +274,7 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: datetime
             if file_counter == today:
                 print("Note: You have submitted more than 1 entry today.")
                 day = file_counter.strftime("%Y-%m-%d")
-            elif file_counter > today:
+            elif file_counter < today:
                 file_counter = file_counter + timedelta(days=1)
                 day = file_counter.strftime("%Y-%m-%d")
             else:
