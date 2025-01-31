@@ -2,6 +2,9 @@
 TD
 """
 
+# Python Standard Library
+from typing import Any, Dict, List
+
 # Third-Party Libraries
 from jinja2 import Template
 
@@ -18,8 +21,16 @@ from src.main.config import TEMPLATES_DIR
 
 
 
-def clean_strings(*args):
+def clean_strings(*args: str) -> List[str]:
+    """
+    Remove newline characters from multiple string arguments.
 
+    Args:
+        *args: Variable number of strings to clean
+
+    Returns:
+        List[str]: List of cleaned strings with newlines removed
+    """
     results = []
     for arg in args:
         results.append(arg.strip("\n"))
@@ -27,9 +38,18 @@ def clean_strings(*args):
     return results
 
 
-def get_files_created(data):
+def get_files_created(data: Dict[str, Any]) -> int:
+    """
+    Create a solution file using a template and provided data.
 
-    with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding='utf-8') as file:
+    Args:
+        data: Dictionary containing template variables including "filename"
+
+    Returns:
+        int: 1 on successful file creation
+    """
+
+    with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding="utf-8") as file:
         template_content = file.read()
 
     # Create a Jinja2 template object
@@ -38,21 +58,33 @@ def get_files_created(data):
     # Render the template with the data
     filled_document = template.render(data)
 
-    with open(f"solutions/{data['filename']}", "w", encoding='utf-8') as file:
+    with open(f"solutions/{data['filename']}", "w", encoding="utf-8") as file:
         file.write(filled_document)
 
     return 1
 
 
-def get_target_line_dict(line):
+def get_target_line_dict(line: str) -> Dict[str, str]:
+    """
+    Parse a table line into a dictionary based on notebook configuration.
+
+    Args:
+        line: String containing pipe-separated table data
+
+    Returns:
+        Dict[str, str]: Dictionary with parsed table data fields
+
+    Raises:
+        ValueError: If notebook configuration is invalid
+    """
 
     data = {
-        'day': '',
-        'title': '',
-        'solution': '',
-        'site': '',
-        'difficulty': '',
-        'nb': '',
+        "day": "",
+        "title": "",
+        "solution": "",
+        "site": "",
+        "difficulty": "",
+        "nb": "",
     }
 
     if NB == 0:
@@ -69,7 +101,7 @@ def get_target_line_dict(line):
 
 
     segments = []
-    for segment in line.split('|'):
+    for segment in line.split("|"):
         segment = segment.strip()
         if segment:
             segments.append(segment)
@@ -83,7 +115,20 @@ def get_target_line_dict(line):
     return results
 
 
-def get_target_line_updated(data, widths):
+def get_target_line_updated(data: Dict[str, str], widths: Dict[str, int]) -> str:
+    """
+    Format a table line with proper padding based on column widths.
+
+    Args:
+        data: Dictionary containing table cell values
+        widths: Dictionary containing column widths
+
+    Returns:
+        str: Formatted table line with proper padding
+
+    Raises:
+        ValueError: If notebook configuration is invalid
+    """
 
     target_line = "|"
 
@@ -91,15 +136,15 @@ def get_target_line_updated(data, widths):
 
         for key, value in data.items():
 
-            if key != 'nb':  # Skip the 'nb' key
+            if key != "nb":  # Skip the "nb" key
                 value_str = str(value)
                 is_second_line = all(char == "-" for char in value_str.strip())
                 diff = widths[key] - len(value_str)
 
                 if is_second_line:
-                    padding = '-' * diff
+                    padding = "-" * diff
                 else:
-                    padding = ' ' * diff
+                    padding = " " * diff
 
                 target_line += f" {value_str}{padding} |"
 
@@ -113,9 +158,9 @@ def get_target_line_updated(data, widths):
             diff = widths[key] - len(value_str)
 
             if is_second_line:
-                padding = '-' * diff
+                padding = "-" * diff
             else:
-                padding = ' ' * diff
+                padding = " " * diff
 
             target_line += f" {value_str}{padding} |"
 
