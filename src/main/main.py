@@ -387,7 +387,7 @@ def implement_runs(handler: PackageHandler) -> int:
     # ######################################
     # CREATE NEW LINE
     # ######################################
-    if handler.get_value("entry_data", "nb"):
+    if handler.get_value("entry_data", "nb") == "TBD":
         handler.update_value("entry_data", "nb", "")
 
     new_entry = get_target_line_updated(handler.get_value("config_base", "nb_loc"),
