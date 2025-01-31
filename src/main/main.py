@@ -336,7 +336,7 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: datetime
 
     # Update entry_data_widths
     handler.update_value("entry_data_widths", "day", len(day) + 2)
-    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]}") + 2)
+    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]})") + 2)
     handler.update_value("entry_data_widths", "solution", len(f"[Solution](solutions/{filename})") + 2)
     handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
     handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
