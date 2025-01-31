@@ -436,7 +436,7 @@ def get_runs_implemented(handler: PackageHandler) -> int:
     return 1
 
 
-def get_runs_default(handler, url, title, site, difficulty, problem, submitted_solution, site_solution, notes, nb, today):
+def get_runs_default(handler: PackageHandler, today: datetime, data: dict) -> None:
     """
     Process form inputs and coordinate execution flow by passing values to specialized functions.
     Acts as a coordinator between form submission and data processing pipeline.
@@ -454,17 +454,27 @@ def get_runs_default(handler, url, title, site, difficulty, problem, submitted_s
         4. Updates configuration columns
     """
 
-    if nb is None:
+    if data["nb"] is None:
         nb = "TBD"
+    else:
+        nb = data["nb"]
 
     # Clean input strings
-    package_list = clean_strings(url, title, site, difficulty, problem, submitted_solution, site_solution, notes, nb)
+    new_package = clean_strings(data["url"],
+                                data["title"],
+                                data["site"],
+                                data["difficulty"],
+                                data["problem"],
+                                data["submitted_solution"],
+                                data["site_solution"],
+                                data["notes"],
+                                nb)
 
 
     # ######################################
     # GET RUNS STARTED (FIRST OR REGULAR)
     # ######################################
-    get_runs_started(handler, package_list, today)
+    get_runs_started(handler, new_package, today)
 
 
     # ######################################

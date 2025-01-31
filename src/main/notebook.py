@@ -169,36 +169,57 @@ def get_form_section_button(handler, today):
     """
 
     container_layout = widgets.Layout(
-        display='flex',
-        flex_flow='column',
-        align_items='center',
-        width='100%'
+        display="flex",
+        flex_flow="column",
+        align_items="center",
+        width="100%"
     )
+
+
+    def validate_form_data():
+
+        form_inputs = {
+            "url": url_widget.value,
+            "title": title_widget.value, 
+            "site": site_widget.value,
+            "difficulty": difficulty_widget.value,
+            "problem": problem_widget.value,
+            "submitted_solution": submitted_solution_widget.value,
+            "site_solution": site_solution_widget.value,
+            "notes": notes_widget.value,
+            "nb": nb_widget.value
+        }
+
+        for key, value in form_inputs.items():
+
+            key_label = key.replace("_", " ").title()
+
+            if not isinstance(value, str):
+
+                return False, f"Field {key_label} must be a string"
+
+            if not value.strip():
+
+                return False, f"Field {key_label} cannot be empty"
+
+
+        return True, form_inputs
+
 
     def create_solution_file(b):
 
+        is_valid, form_inputs_validated = validate_form_data()
+
+        if not is_valid:
+            print(f"Validation error: {form_inputs_validated}")
+            return
+
         print(b.tooltip)
 
-        from src import get_runs_default
 
-        # try:
-        #     nb = nb
-        # except:
-        #     nb = "TBD"
+        from src import get_runs_default # pylint: disable=import-outside-toplevel
 
-        get_runs_default(
-            handler,
-            title = title_widget.value,
-            url = url_widget.value,
-            site = site_widget.value,
-            difficulty = difficulty_widget.value,
-            problem = problem_widget.value,
-            submitted_solution = submitted_solution_widget.value,
-            site_solution = site_solution_widget.value,
-            notes = notes_widget.value,
-            nb = nb_widget.value,
-            today = today
-        )
+        get_runs_default(handler, today, form_inputs_validated)
 
 
     create_button = widgets.Button(description="Process Entry", tooltip="Processing...")
