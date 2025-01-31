@@ -210,7 +210,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     return 1
 
 
-def start_runs(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
+def start_runs(handler: PackageHandler, package_list: list[str], today: str) -> int:
     """
     Sets up first and regular runs by processing project information and 
     updating dictionaries.
@@ -285,7 +285,7 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: datetime
 
         elif seq_notation_loc == 1:
 
-            day = today.strftime('%Y-%m-%d')
+            day = today
 
         else:
 
