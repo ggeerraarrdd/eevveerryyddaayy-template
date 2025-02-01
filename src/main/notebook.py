@@ -243,6 +243,16 @@ def create_form_button(handler: PackageHandler, today: datetime) -> widgets.VBox
 
         print(b.tooltip)
 
+        # Clear all form fields
+        url_widget.value = ""
+        title_widget.value = ""
+        site_widget.value = ""
+        difficulty_widget.value = ""
+        problem_widget.value = ""
+        submitted_solution_widget.value = ""
+        site_solution_widget.value = ""
+        notes_widget.value = "TBD"
+        nb_widget.value = "TBD"
 
         from src import handle_runs_default # pylint: disable=import-outside-toplevel
 
