@@ -107,12 +107,11 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     """
     # HANDLE ENVIRONMENT VARIABLES
     env_vars = {
-        "seq_start": f"{today.strftime('%Y-%m-%d')}",
+        "seq_start": today.strftime('%Y-%m-%d'),
         "nb": int(os.environ.get("NB", 0)),
         "nb_name": os.environ.get("NB_NAME", "NB"),
         "seq_notation": int(os.environ.get("SEQ_NOTATION", 0)),
     }
-
 
     # HANDLE CONFIG.PY
     with open(f"{CONFIG_DIR}/config.py", "r+", encoding="utf-8") as file:
@@ -121,7 +120,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         for i, line in enumerate(lines):
 
             if line.startswith("SEQ_START="):
-                lines[i] = f'"SEQ_START={env_vars["seq_start"]}\n"'
+                lines[i] = f'SEQ_START="{env_vars["seq_start"]}"\n'
 
             if line.startswith("NB="):
                 lines[i] = f"NB={env_vars["nb"]}\n"
@@ -356,7 +355,6 @@ def open_runs_dicts(handler: PackageHandler, seq: str, new_package: dict, filena
     handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
     handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
     handler.update_value("entry_data_widths", "nb", len(new_package["nb"]) + 2)
-
 
 
     return 1
