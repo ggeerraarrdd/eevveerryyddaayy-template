@@ -14,7 +14,7 @@ the central coordinator for:
 """
 
 # Python Standard Library
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import os
 import re
@@ -242,7 +242,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
             seq_last = int(file_last[:3])
 
-            seq_next = seq_last + 1
+            # seq_next = seq_last + 1
 
             seq_actual = datetime.strptime(seq_start_loc, "%Y-%m-%d")
             seq_actual = seq_actual.date()
@@ -255,7 +255,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
             seq_last = datetime.strptime(file_last[:10], "%Y-%m-%d")
             seq_last = seq_last.date()
 
-            seq_next = seq_last + timedelta(days=1)
+            # seq_next = seq_last + timedelta(days=1)
 
             seq_actual = datetime.now().date()
 
@@ -267,7 +267,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
         if seq_last == seq_actual:
             print("Note: You have submitted more than 1 entry today.")
-        elif seq_next <= seq_last:
+        elif seq_last < seq_actual:
             pass
         else:
             print("Note: Invalid sequence. Processing not terminated.")
