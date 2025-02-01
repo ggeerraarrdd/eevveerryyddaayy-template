@@ -21,19 +21,19 @@ Parameters
 ----------
 SEQ_START : str
     Values:
-        "" : Empty string - enables initialization on first run
-        "YYYY-MM-DD" : Specific date - prevents initialization
-    Default: "" (empty string)
+        '' : Empty string - enables initialization on first run
+        'YYYY-MM-DD' : Specific date - prevents initialization
+    Default: '' (empty string)
 
 Example:
-    "2025-01-01"
+    '2025-01-01'
 
 Notes:
     When set to empty string, initialization will occur on first run
     and SEQ_START will be set to that date. Once set, initialization
     will not occur again.
 """
-SEQ_START=""
+SEQ_START=''
 
 
 
@@ -57,36 +57,36 @@ NB : int
 NB_NAME : str
     The header title for the sixth column when enabled.
     Only relevant when NB=1.
-    Default: "NB"
+    Default: 'NB'
 
 Example:
     NB=0 keeps number of columns to five.
-    NB=1, NB_NAME="Notes" creates a sixth column titled "Notes"
+    NB=1, NB_NAME='Notes' creates a sixth column titled 'Notes'
 """
 NB=0
-NB_NAME="NB"
+NB_NAME='NB'
 
 
 
 
 
 """
-Index Table: Sequential Numbering Format for First Column ("Day")
+Index Table: Sequential Numbering Format for First Column ('Day')
 ===========================================================================
 
-This setting determines how the values in the first column ("Day") of the
+This setting determines how the values in the first column ('Day') of the
 Index table are formatted.
 
 Parameters
 ----------
 SEQ_NOTATION : int
     Values:
-        0: Three-digit zero-padded number (e.g., "001", "002")
-        1: Full ISO date format (e.g., "2001-01-01")
+        0: Three-digit zero-padded number (e.g., '001', '002')
+        1: Full ISO date format (e.g., '2001-01-01')
     Default: 0
 
 Notes:
-    The chosen format affects all "Day" values throughout the sequence. 
+    The chosen format affects all 'Day' values throughout the sequence. 
     Three-digit format (0) is more compact but date format (1) provides 
     more temporal context.
 """
@@ -97,12 +97,12 @@ SEQ_NOTATION=0
 
 
 """
-Index Table: Sequential Numbering Gaps for First Column ("Day")
+Index Table: Sequential Numbering Gaps for First Column ('Day')
 ===========================================================================
 
 NOTE: Feature not yet implemented.
 
-This setting determines how the system handles "Day" values that are 
+This setting determines how the system handles 'Day' values that are 
 missing from the sequence numbering.
 
 Parameters
@@ -152,14 +152,14 @@ Parameters
 ----------
 SOLUTIONS_DIR : str
     Relative path to the directory containing solution files
-    Default: "solutions"
+    Default: 'solutions'
 CONFIG_DIR : str
     Relative path to the configuration files directory
-    Default: "src/main/config"
+    Default: 'src/main/config'
 TEMPLATES_DIR : str
     Relative path to the templates directory
-    Default: "src/main/templates" 
+    Default: 'src/main/templates' 
 """
-SOLUTIONS_DIR="solutions"
-CONFIG_DIR="src/main/config"
-TEMPLATES_DIR="src/main/templates"
+SOLUTIONS_DIR='solutions'
+CONFIG_DIR='src/main/config'
+TEMPLATES_DIR='src/main/templates'

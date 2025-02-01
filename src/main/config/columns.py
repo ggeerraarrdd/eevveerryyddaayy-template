@@ -18,12 +18,12 @@ Column Descriptions:
     nb (int): Width of optional sixth column
 
 COLS_WIDTH_DEFAULT = {
-    "day": 5,
-    "title": 7,
-    "solution": 10,
-    "site": 6,
-    "difficulty": 12,
-    "nb": 1
+    'day': 5,
+    'title': 7,
+    'solution': 10,
+    'site': 6,
+    'difficulty': 12,
+    'nb': 1
 }
 
 Notes:
@@ -31,10 +31,10 @@ Notes:
     Index table, not its visual appearance in the rendered README file.
 """
 COLS_WIDTH = {
-    "day": 5,
-    "title": 7,
-    "solution": 10,
-    "site": 6,
-    "difficulty": 12,
-    "nb": 1
+    'day': 5,
+    'title': 7,
+    'solution': 10,
+    'site': 6,
+    'difficulty': 12,
+    'nb': 1
 }

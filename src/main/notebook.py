@@ -6,6 +6,7 @@ and process data. The form interface is specifically designed for use within a
 Jupyter notebook environment.
 """
 
+
 # Python Standard Library
 from ast import literal_eval
 from datetime import datetime
@@ -51,7 +52,7 @@ title_widget = widgets.Textarea(
     layout=text_layout
 )
 
-site_options = os.getenv("SITE_OPTIONS")
+site_options = os.getenv('SITE_OPTIONS')
 
 if site_options:
     # Convert list to string representation for literal_eval
@@ -71,15 +72,15 @@ if site_options:
         )
     else:
         site_widget = widgets.Dropdown(
-            options=[""] + options_list,
-            value="",
+            options=[''] + options_list,
+            value='',
             layout=text_layout
         )
 else:
     # Default options if environment variable is not set
     site_widget = widgets.Dropdown(
-        options=["", "Codewars", "DataLemur", "LeetCode"],
-        value="",
+        options=['', 'Codewars', 'DataLemur', 'LeetCode'],
+        value='',
         layout=text_layout
     )
 
@@ -179,25 +180,26 @@ def create_form_main(handler: PackageHandler) -> widgets.VBox:
     )
 
     sections = [
-        ("URL", url_widget),
-        ("Title", title_widget),
-        ("Site", site_widget),
-        ("Difficulty", difficulty_widget),
-        ("Problem", problem_widget),
-        ("Your Solution", submitted_solution_widget),
-        ("Site Solution", site_solution_widget),
-        ("Notes", notes_widget)
+        ('URL', url_widget),
+        ('Title', title_widget),
+        ('Site', site_widget),
+        ('Difficulty', difficulty_widget),
+        ('Problem', problem_widget),
+        ('Your Solution', submitted_solution_widget),
+        ('Site Solution', site_solution_widget),
+        ('Notes', notes_widget)
     ]
 
-    if handler.get_value("config_base", "nb_loc") == 1:
-        sections.append((handler.get_value("config_base", "nb_name_loc"), nb_widget))
+    if handler.get_value('config_base', 'nb_loc') == 1:
+        sections.append((handler.get_value('config_base', 'nb_name_loc'), nb_widget))
 
     section_list = []
     for heading, widget in sections:
-        label = widgets.HTML(value=f"<b>{heading}</b>", layout=label_layout)
+        label = widgets.HTML(value=f'<b>{heading}</b>', layout=label_layout)
         section_list.append(widgets.VBox([label, widget], layout=container_layout))
 
     section_main = widgets.VBox(section_list, layout=container_layout)
+
 
     return section_main
 
@@ -219,39 +221,39 @@ def create_form_button(handler: PackageHandler, today: datetime) -> widgets.VBox
         VBox: A vertical box container with the submission button.
     """
     container_layout = widgets.Layout(
-        display="flex",
-        flex_flow="column",
-        align_items="center",
-        width="100%"
+        display='flex',
+        flex_flow='column',
+        align_items='center',
+        width='100%'
     )
 
 
     def validate_form_data():
 
         form_inputs = {
-            "url": url_widget.value,
-            "title": title_widget.value, 
-            "site": site_widget.value,
-            "difficulty": difficulty_widget.value,
-            "problem": problem_widget.value,
-            "submitted_solution": submitted_solution_widget.value,
-            "site_solution": site_solution_widget.value,
-            "notes": notes_widget.value,
-            "nb": nb_widget.value
+            'url': url_widget.value,
+            'title': title_widget.value, 
+            'site': site_widget.value,
+            'difficulty': difficulty_widget.value,
+            'problem': problem_widget.value,
+            'submitted_solution': submitted_solution_widget.value,
+            'site_solution': site_solution_widget.value,
+            'notes': notes_widget.value,
+            'nb': nb_widget.value
         }
 
         for key, value in form_inputs.items():
 
-            if key == "nb":
-                key = handler.get_value("config_base", "nb_name_loc")
-                key_label = key.replace("_", " ").title()
+            if key == 'nb':
+                key = handler.get_value('config_base', 'nb_name_loc')
+                key_label = key.replace('_', ' ').title()
             else:
-                key_label = key.replace("_", " ").title()
+                key_label = key.replace('_', ' ').title()
 
             if not isinstance(value, str):
-                return False, f"Field {key_label} must be a string"
+                return False, f'Field {key_label} must be a string'
             if not value.strip():
-                return False, f"Field {key_label} cannot be empty"
+                return False, f'Field {key_label} cannot be empty'
 
 
         return True, form_inputs
@@ -262,28 +264,28 @@ def create_form_button(handler: PackageHandler, today: datetime) -> widgets.VBox
         is_valid, form_inputs_validated = validate_form_data()
 
         if not is_valid:
-            print(f"Validation error: {form_inputs_validated}")
+            print(f'Validation error: {form_inputs_validated}')
             return
 
         print(b.tooltip)
 
         # Clear all form fields
-        url_widget.value = ""
-        title_widget.value = ""
-        site_widget.value = ""
-        difficulty_widget.value = ""
-        problem_widget.value = ""
-        submitted_solution_widget.value = ""
-        site_solution_widget.value = ""
-        notes_widget.value = "TBD"
-        nb_widget.value = "TBD"
+        url_widget.value = ''
+        title_widget.value = ''
+        site_widget.value = ''
+        difficulty_widget.value = ''
+        problem_widget.value = ''
+        submitted_solution_widget.value = ''
+        site_solution_widget.value = ''
+        notes_widget.value = 'TBD'
+        nb_widget.value = 'TBD'
 
         from src import handle_runs_default # pylint: disable=import-outside-toplevel
 
         handle_runs_default(handler, today, form_inputs_validated)
 
 
-    create_button = widgets.Button(description="Process Entry", tooltip="Processing...")
+    create_button = widgets.Button(description='Process Entry', tooltip='Processing...')
     create_button.on_click(execute_runs)
     section_button = widgets.VBox([create_button], layout=container_layout)
 
@@ -328,7 +330,7 @@ def form() -> widgets.VBox:
 
     else:
 
-        raise ValueError("Invalid configuration: TODO")
+        raise ValueError('Invalid configuration: TODO')
 
 
     # ######################################

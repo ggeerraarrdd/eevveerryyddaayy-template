@@ -2,6 +2,7 @@
 TD
 """
 
+
 # Python Standard Library
 from typing import Any, Dict, List
 
@@ -32,7 +33,7 @@ def clean_strings(*args: str) -> List[str]:
     """
     results = []
     for arg in args:
-        results.append(arg.strip("\n"))
+        results.append(arg.strip('\n'))
 
     return results
 
@@ -48,7 +49,7 @@ def get_files_created(data: Dict[str, Any]) -> int:
         int: 1 on successful file creation
     """
 
-    with open(f"{TEMPLATES_DIR}/solution.txt", "r", encoding="utf-8") as file:
+    with open(f'{TEMPLATES_DIR}/solution.txt', 'r', encoding='utf-8') as file:
         template_content = file.read()
 
     # Create a Jinja2 template object
@@ -57,7 +58,7 @@ def get_files_created(data: Dict[str, Any]) -> int:
     # Render the template with the data
     filled_document = template.render(data)
 
-    with open(f"solutions/{data['filename']}", "w", encoding="utf-8") as file:
+    with open(f'solutions/{data["filename"]}', 'w', encoding='utf-8') as file:
         file.write(filled_document)
 
     return 1
@@ -76,14 +77,13 @@ def get_target_line_dict(nb_loc, line: str) -> Dict[str, str]:
     Raises:
         ValueError: If notebook configuration is invalid
     """
-
     data = {
-        "day": "",
-        "title": "",
-        "solution": "",
-        "site": "",
-        "difficulty": "",
-        "nb": "",
+        'day': '',
+        'title': '',
+        'solution': '',
+        'site': '',
+        'difficulty': '',
+        'nb': '',
     }
 
     if nb_loc == 0:
@@ -96,18 +96,18 @@ def get_target_line_dict(nb_loc, line: str) -> Dict[str, str]:
 
     else:
 
-        raise ValueError("Invalid configuration: TODO")
+        raise ValueError('Invalid configuration: TODO')
 
 
     segments = []
-    for segment in line.split("|"):
+    for segment in line.split('|'):
         segment = segment.strip()
         if segment:
             segments.append(segment)
 
     for i, key in enumerate(keys):
         if i < len(segments):
-            data[key] = f"{segments[i]}"
+            data[key] = f'{segments[i]}'
 
     results = data
 
@@ -128,24 +128,23 @@ def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]
     Raises:
         ValueError: If notebook configuration is invalid
     """
-
-    target_line = "|"
+    target_line = '|'
 
     if nb_loc == 0:
 
         for key, value in data.items():
 
-            if key != "nb":  # Skip the "nb" key
+            if key != 'nb':  # Skip the "nb" key
                 value_str = str(value)
-                is_second_line = all(char == "-" for char in value_str.strip())
+                is_second_line = all(char == '-' for char in value_str.strip())
                 diff = widths[key] - len(value_str)
 
                 if is_second_line:
-                    padding = "-" * diff
+                    padding = '-' * diff
                 else:
-                    padding = " " * diff
+                    padding = ' ' * diff
 
-                target_line += f" {value_str}{padding} |"
+                target_line += f' {value_str}{padding} |'
 
     elif nb_loc == 1:
 
@@ -153,19 +152,19 @@ def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]
 
             value_str = str(value)
 
-            is_second_line = value_str and all(char == "-" for char in value_str.strip())
+            is_second_line = value_str and all(char == '-' for char in value_str.strip())
             diff = widths[key] - len(value_str)
 
             if is_second_line:
-                padding = "-" * diff
+                padding = '-' * diff
             else:
-                padding = " " * diff
+                padding = ' ' * diff
 
-            target_line += f" {value_str}{padding} |"
+            target_line += f' {value_str}{padding} |'
 
     else:
 
-        raise ValueError("Invalid configuration: TODO")
+        raise ValueError('Invalid configuration: TODO')
 
     results = target_line
 

@@ -13,6 +13,7 @@ the central coordinator for:
 - Coordinating data flow between notebook interface and storage
 """
 
+
 # Python Standard Library
 from datetime import datetime
 import json
@@ -59,7 +60,7 @@ def validate_runs(handler: PackageHandler) -> bool:
         - Config directory must exist
         - Solutions directory must be accessible, if exists
     """
-    seq_start_loc = handler.get_value("config_base", "seq_start_loc")
+    seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
 
     # Create solutions directory if it doesn't exist
     if not os.path.exists(SOLUTIONS_DIR):
@@ -69,16 +70,16 @@ def validate_runs(handler: PackageHandler) -> bool:
         files = sorted(entry.name for entry in entries)
 
         # First run case
-        if files and seq_start_loc != "":
+        if files and seq_start_loc != '':
             run_validation = False
 
         # Regular run
-        elif not files and seq_start_loc == "":
+        elif not files and seq_start_loc == '':
             run_validation = True
 
         # Invalid project state
         else:
-            raise ValueError("Invalid project state: Either (1) Solutions dir contains file(s) and SEQ_START value set or (2) Solutions dir is empty and SEQ_START value set to empty string.")
+            raise ValueError('Invalid project state: Either (1) Solutions dir contains file(s) and SEQ_START value set or (2) Solutions dir is empty and SEQ_START value set to empty string.')
 
     results = run_validation
 
@@ -107,29 +108,29 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     """
     # HANDLE ENVIRONMENT VARIABLES
     env_vars = {
-        "seq_start": today.strftime('%Y-%m-%d'),
-        "nb": int(os.environ.get("NB", 0)),
-        "nb_name": os.environ.get("NB_NAME", "NB"),
-        "seq_notation": int(os.environ.get("SEQ_NOTATION", 0)),
+        'seq_start': today.strftime('%Y-%m-%d'),
+        'nb': int(os.environ.get('NB', 0)),
+        'nb_name': os.environ.get('NB_NAME', 'NB'),
+        'seq_notation': int(os.environ.get('SEQ_NOTATION', 0)),
     }
 
     # HANDLE CONFIG.PY
-    with open(f"{CONFIG_DIR}/config.py", "r+", encoding="utf-8") as file:
+    with open(f'{CONFIG_DIR}/config.py', 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
         for i, line in enumerate(lines):
 
-            if line.startswith("SEQ_START="):
-                lines[i] = f'SEQ_START="{env_vars["seq_start"]}"\n'
+            if line.startswith('SEQ_START='):
+                lines[i] = f'SEQ_START=\'{env_vars["seq_start"]}\'\n'
 
-            if line.startswith("NB="):
-                lines[i] = f"NB={env_vars["nb"]}\n"
+            if line.startswith('NB='):
+                lines[i] = f'NB={env_vars["nb"]}\n'
 
-            if line.startswith("NB_NAME="):
-                lines[i] = f'NB_NAME="{env_vars["nb_name"]}"\n'
+            if line.startswith('NB_NAME='):
+                lines[i] = f'NB_NAME=\'{env_vars["nb_name"]}\'\n'
 
-            if line.startswith("SEQ_NOTATION="):
-                lines[i] = f"SEQ_NOTATION={env_vars["seq_notation"]}\n"
+            if line.startswith('SEQ_NOTATION='):
+                lines[i] = f'SEQ_NOTATION={env_vars["seq_notation"]}\n'
 
         file.seek(0)
         file.writelines(lines)
@@ -137,71 +138,71 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
 
 
     # HANDLE EXTRA COLUMN (aka NB)
-    if env_vars["nb"] == 1:
+    if env_vars['nb'] == 1:
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - README
         index_block = {
-                "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
-                "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+                'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
+                'end': '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
             }
 
         start_line_readme = None
         end_line_readme = None
 
         index_header = {
-            "labels": f"| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |",
-            "sep": f"| ----- | ------- | ---------- | ------ | ------------ | { '-' * (len(env_vars["nb_name"]) + 2) } |"
+            'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
+            'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(env_vars["nb_name"]) + 2) } |'
         }
 
-        with open("README.md", "r+", encoding="utf-8") as file:
+        with open('README.md', 'r+', encoding='utf-8') as file:
             lines = file.readlines()
 
             for i in range(len(lines)-1, -1, -1):
 
-                if index_block["start"] in lines[i]:
+                if index_block['start'] in lines[i]:
                     start_line_readme = i
 
-                if index_block["end"] in lines[i]:
+                if index_block['end'] in lines[i]:
                     end_line_readme = i
 
             for j in range(start_line_readme + 1, end_line_readme):
 
                 if j == start_line_readme + 1:
-                    lines[j] = f"{index_header["labels"]}\n"
+                    lines[j] = f'{index_header["labels"]}\n'
 
                 if j == start_line_readme + 2:
-                    lines[j] = f"{index_header["sep"]}\n"
+                    lines[j] = f'{index_header["sep"]}\n'
 
                 if j > start_line_readme + 2:
-                    lines[j] = ""
+                    lines[j] = ''
 
             file.seek(0)
             file.writelines(lines)
             file.truncate()
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
-        with open(f"{TEMPLATES_DIR}/solution.txt", "r+", encoding="utf-8") as file:
+        with open(f'{TEMPLATES_DIR}/solution.txt', 'r+', encoding='utf-8') as file:
             lines_template = file.readlines()
 
-            lines_template[29] = f"## {env_vars["nb_name"]}\n"
-            lines_template[32] = "\n"
+            lines_template[29] = f'## {env_vars["nb_name"]}\n'
+            lines_template[32] = '\n'
 
             file.seek(0)
             file.writelines(lines_template)
             file.truncate()
 
-        print(f"Extra column selected: {env_vars["nb_name"]}")
+        print(f'Extra column selected: {env_vars["nb_name"]}')
 
 
     # UPDATE DICTS
-    handler.update_value("config_base", "seq_start_loc", env_vars["seq_start"])
-    handler.update_value("config_base", "nb_loc", env_vars["nb"])
-    handler.update_value("config_base", "nb_name_loc", env_vars["nb_name"])
-    handler.update_value("config_base", "seq_notation_loc", env_vars["seq_notation"])
+    handler.update_value('config_base', 'seq_start_loc', env_vars['seq_start'])
+    handler.update_value('config_base', 'nb_loc', env_vars['nb'])
+    handler.update_value('config_base', 'nb_name_loc', env_vars['nb_name'])
+    handler.update_value('config_base', 'seq_notation_loc', env_vars['seq_notation'])
 
-    handler.update_value("config_cols_widths", "nb", len(env_vars["nb_name"]) + 2)
+    handler.update_value('config_cols_widths', 'nb', len(env_vars['nb_name']) + 2)
 
-    print("First run initialized")
+    print('First run initialized')
 
 
     return 1
@@ -227,8 +228,8 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
         - 0: Three digit sequence (e.g. "001")
         - 1: Date format (e.g. "2025-01-31")
     """
-    seq_start_loc = handler.get_value("config_base", "seq_start_loc")
-    seq_notation_loc = handler.get_value("config_base", "seq_notation_loc")
+    seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
+    seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
 
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
@@ -243,47 +244,47 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
             # seq_next = seq_last + 1
 
-            seq_actual = datetime.strptime(seq_start_loc, "%Y-%m-%d")
+            seq_actual = datetime.strptime(seq_start_loc, '%Y-%m-%d')
             seq_actual = seq_actual.date()
             seq_actual = (today.date() - seq_actual).days + 1
 
-            seq = f"{seq_actual:03d}"
+            seq = f'{seq_actual:03d}'
 
         elif seq_notation_loc == 1:
 
-            seq_last = datetime.strptime(file_last[:10], "%Y-%m-%d")
+            seq_last = datetime.strptime(file_last[:10], '%Y-%m-%d')
             seq_last = seq_last.date()
 
             # seq_next = seq_last + timedelta(days=1)
 
             seq_actual = datetime.now().date()
 
-            seq = seq_actual.strftime("%Y-%m-%d")
+            seq = seq_actual.strftime('%Y-%m-%d')
 
         else:
 
-            raise ValueError("Invalid configuration: TODO")
+            raise ValueError('Invalid configuration: TODO')
 
         if seq_last == seq_actual:
-            print("Note: You have submitted more than 1 entry today.")
+            print('Note: You have submitted more than 1 entry today.')
         elif seq_last < seq_actual:
             pass
         else:
-            print("Note: Invalid sequence. Processing not terminated.")
+            print('Note: Invalid sequence. Processing not terminated.')
 
     else:
 
         if seq_notation_loc == 0:
 
-            seq = "001"
+            seq = '001'
 
         elif seq_notation_loc == 1:
 
-            seq = today.strftime("%Y-%m-%d")
+            seq = today.strftime('%Y-%m-%d')
 
         else:
 
-            raise ValueError("Invalid configuration: TODO")
+            raise ValueError('Invalid configuration: TODO')
 
     return seq
 
@@ -300,10 +301,10 @@ def open_runs_file(title: str, seq: str) -> str:
         str: Formatted filename in the pattern "{seq}_{sanitized_title}.md"
     """
     filename = title.lower()
-    filename = re.sub(r"[^a-z0-9\s-]", "", filename)
-    filename = filename.replace(" ", "_")
-    filename = filename.replace("-", "_")
-    filename = f"{seq}_{filename.strip()}.md"
+    filename = re.sub(r'[^a-z0-9\s-]', '', filename)
+    filename = filename.replace(' ', '_')
+    filename = filename.replace('-', '_')
+    filename = f'{seq}_{filename.strip()}.md'
 
 
     return filename
@@ -328,33 +329,33 @@ def open_runs_dicts(handler: PackageHandler, seq: str, new_package: dict, filena
         - entry_data_widths: Column width calculations for display formatting
     """
     # Update package
-    handler.update_value("package", "day", seq)
-    handler.update_value("package", "url", new_package["url"])
-    handler.update_value("package", "title", new_package["title"])
-    handler.update_value("package", "site", new_package["site"])
-    handler.update_value("package", "difficulty", new_package["difficulty"])
-    handler.update_value("package", "problem", new_package["problem"])
-    handler.update_value("package", "submitted_solution", new_package["submitted_solution"])
-    handler.update_value("package", "site_solution", new_package["site_solution"])
-    handler.update_value("package", "notes", new_package["notes"])
-    handler.update_value("package", "nb", new_package["nb"])
-    handler.update_value("package", "filename", filename)
+    handler.update_value('package', 'day', seq)
+    handler.update_value('package', 'url', new_package["url"])
+    handler.update_value('package', 'title', new_package["title"])
+    handler.update_value('package', 'site', new_package["site"])
+    handler.update_value('package', 'difficulty', new_package["difficulty"])
+    handler.update_value('package', 'problem', new_package["problem"])
+    handler.update_value('package', 'submitted_solution', new_package["submitted_solution"])
+    handler.update_value('package', 'site_solution', new_package["site_solution"])
+    handler.update_value('package', 'notes', new_package["notes"])
+    handler.update_value('package', 'nb', new_package["nb"])
+    handler.update_value('package', 'filename', filename)
 
     # Update entry_data
-    handler.update_value("entry_data", "day", seq)
-    handler.update_value("entry_data", "title", f"[{new_package["title"]}]({new_package["url"]})")
-    handler.update_value("entry_data", "solution", f"[Solution](solutions/{filename})")
-    handler.update_value("entry_data", "site", new_package["site"])
-    handler.update_value("entry_data", "difficulty", new_package["difficulty"])
-    handler.update_value("entry_data", "nb", new_package["nb"])
+    handler.update_value('entry_data', 'day', seq)
+    handler.update_value('entry_data', 'title', f'[{new_package["title"]}]({new_package["url"]})')
+    handler.update_value('entry_data', 'solution', f'[Solution](solutions/{filename})')
+    handler.update_value('entry_data', 'site', new_package["site"])
+    handler.update_value('entry_data', 'difficulty', new_package["difficulty"])
+    handler.update_value('entry_data', 'nb', new_package["nb"])
 
     # Update entry_data_widths
-    handler.update_value("entry_data_widths", "day", len(seq) + 2)
-    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]}") + 2)
-    handler.update_value("entry_data_widths", "solution", len(f"[Solution](solutions/{filename})") + 2)
-    handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
-    handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
-    handler.update_value("entry_data_widths", "nb", len(new_package["nb"]) + 2)
+    handler.update_value('entry_data_widths', 'day', len(seq) + 2)
+    handler.update_value('entry_data_widths', 'title', len(f'[{new_package["title"]}]({new_package["url"]}') + 2)
+    handler.update_value('entry_data_widths', 'solution', len(f'[Solution](solutions/{filename})') + 2)
+    handler.update_value('entry_data_widths', 'site', len(new_package["site"]) + 2)
+    handler.update_value('entry_data_widths', 'difficulty', len(new_package["difficulty"]) + 2)
+    handler.update_value('entry_data_widths', 'nb', len(new_package["nb"]) + 2)
 
 
     return 1
@@ -391,22 +392,22 @@ def open_runs(handler: PackageHandler, package_list: list[str], today: datetime)
         - Valid package_list with all required elements from Jupyter Notebook form
     """
     new_package = {
-        "url": package_list[0],
-        "title": package_list[1],
-        "site": package_list[2],
-        "difficulty": package_list[3],
-        "problem": package_list[4],
-        "submitted_solution": package_list[5],
-        "site_solution": package_list[6],
-        "notes": package_list[7],
-        "nb": package_list[8]
+        'url': package_list[0],
+        'title': package_list[1],
+        'site': package_list[2],
+        'difficulty': package_list[3],
+        'problem': package_list[4],
+        'submitted_solution': package_list[5],
+        'site_solution': package_list[6],
+        'notes': package_list[7],
+        'nb': package_list[8]
     }
 
     # Create sequence
     seq = open_runs_seq(handler, today)
 
     # Create filename
-    filename = open_runs_file(new_package["title"], seq)
+    filename = open_runs_file(new_package['title'], seq)
 
     # Update PackageHandler dicts
     results = open_runs_dicts(handler, seq, new_package, filename)
@@ -439,40 +440,40 @@ def implement_runs(handler: PackageHandler) -> int:
     # ######################################
     # CREATE NEW FILE
     # ######################################
-    get_files_created(handler.get_dictionary("package"))
+    get_files_created(handler.get_dictionary('package'))
 
 
     # ######################################
     # UPDATE config_cols_widths
     # ######################################
     change_old_lines = 0
-    for key, value in handler.get_dictionary("config_cols_widths").items():
-        new_value = handler.get_dictionary("entry_data_widths")[key]
+    for key, value in handler.get_dictionary('config_cols_widths').items():
+        new_value = handler.get_dictionary('entry_data_widths')[key]
         if value < new_value:
-            handler.update_value("config_cols_widths", key, new_value)
+            handler.update_value('config_cols_widths', key, new_value)
             change_old_lines = 1
 
 
     # ######################################
     # CREATE NEW LINE
     # ######################################
-    if handler.get_value("entry_data", "nb") == "TBD":
-        handler.update_value("entry_data", "nb", "")
+    if handler.get_value('entry_data', 'nb') == 'TBD':
+        handler.update_value('entry_data', 'nb', '')
 
-    new_entry = get_target_line_updated(handler.get_value("config_base", "nb_loc"),
-                                        handler.get_dictionary("entry_data"),
-                                        handler.get_dictionary("config_cols_widths"))
+    new_entry = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
+                                        handler.get_dictionary('entry_data'),
+                                        handler.get_dictionary('config_cols_widths'))
 
 
     # ######################################
     # GET TARGET LINES FROM README
     # ######################################
     index_block = {
-        "start": "<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->",
-        "end": "<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->"
+        'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
+        'end': '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
     }
 
-    with open("README.md", "r+", encoding='utf-8') as file:
+    with open('README.md', 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
         start_line = None
@@ -480,9 +481,9 @@ def implement_runs(handler: PackageHandler) -> int:
 
         # GET START AND END LINES OF INDEX
         for i, line in enumerate(lines):
-            if index_block["start"] in line:
+            if index_block['start'] in line:
                 start_line = i  # Line numbers start from 1
-            if index_block["end"] in line:
+            if index_block['end'] in line:
                 end_line = i
 
 
@@ -493,19 +494,19 @@ def implement_runs(handler: PackageHandler) -> int:
             for i in range(start_line + 1, end_line):
 
                 # Convert target line (str) to data (dict)
-                target_line_data = get_target_line_dict(handler.get_value("config_base", "nb_loc"),
+                target_line_data = get_target_line_dict(handler.get_value('config_base', 'nb_loc'),
                                                         lines[i])
 
                 # Update target line
-                line_updated = get_target_line_updated(handler.get_value("config_base", "nb_loc"),
+                line_updated = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
                                                        target_line_data,
-                                                       handler.get_dictionary("config_cols_widths"))
+                                                       handler.get_dictionary('config_cols_widths'))
 
                 # Replace the original line with the updated one
-                lines[i] = f"{line_updated}\n"
+                lines[i] = f'{line_updated}\n'
 
         # INSERT NEW LINE TO LINES
-        lines.insert(end_line, f"{new_entry}\n")
+        lines.insert(end_line, f'{new_entry}\n')
 
         file.seek(0)
         file.writelines(lines)
@@ -525,18 +526,18 @@ def close_runs(column_widths: dict) -> int:
     Returns:
         int: Returns 1 on successful completion
     """
-    with open(f"{CONFIG_DIR}/columns.py", 'r+', encoding='utf-8') as file:
+    with open(f'{CONFIG_DIR}/columns.py', 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
         line_target = None
         for i, line in enumerate(lines):
-            if "COLS_WIDTH = {" in line:
+            if 'COLS_WIDTH = {' in line:
                 line_target = i
                 break
 
         del lines[line_target:]
 
-        data = f"COLS_WIDTH = {json.dumps(column_widths, indent=4)}\n"
+        data = f'COLS_WIDTH = {json.dumps(column_widths, indent=4)}\n'
 
         lines[line_target:line_target] = data.splitlines(True)
 
@@ -565,20 +566,20 @@ def handle_runs_default(handler: PackageHandler, today: datetime, data: dict) ->
         3. Implements run settings
         4. Updates configuration columns
     """
-    if data["nb"] is None:
-        nb = "TBD"
+    if data['nb'] is None:
+        nb = 'TBD'
     else:
-        nb = data["nb"]
+        nb = data['nb']
 
     # Clean input strings
-    new_package = clean_strings(data["url"],
-                                data["title"],
-                                data["site"],
-                                data["difficulty"],
-                                data["problem"],
-                                data["submitted_solution"],
-                                data["site_solution"],
-                                data["notes"],
+    new_package = clean_strings(data['url'],
+                                data['title'],
+                                data['site'],
+                                data['difficulty'],
+                                data['problem'],
+                                data['submitted_solution'],
+                                data['site_solution'],
+                                data['notes'],
                                 nb)
 
 
@@ -597,9 +598,9 @@ def handle_runs_default(handler: PackageHandler, today: datetime, data: dict) ->
     # ######################################
     # RUNS - CLOSE
     # ######################################
-    close_runs(handler.get_dictionary("config_cols_widths"))
+    close_runs(handler.get_dictionary('config_cols_widths'))
 
 
 
 
-    return print("Done")
+    return print('Done')
