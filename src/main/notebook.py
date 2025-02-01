@@ -78,7 +78,7 @@ if site_options:
 else:
     # Default options if environment variable is not set
     site_widget = widgets.Dropdown(
-        options=["", "DataLemur", "HackerRank", "LeetCode"],
+        options=["", "Codewars", "DataLemur", "LeetCode"],
         value="",
         layout=text_layout
     )
@@ -166,7 +166,6 @@ def create_form_main(handler: PackageHandler) -> widgets.VBox:
     Returns:
         VBox: A vertical box container with all form input fields.
     """
-
     label_layout = widgets.Layout(
         width='50%',
         margin='0'
@@ -219,7 +218,6 @@ def create_form_button(handler: PackageHandler, today: datetime) -> widgets.VBox
     Returns:
         VBox: A vertical box container with the submission button.
     """
-
     container_layout = widgets.Layout(
         display="flex",
         flex_flow="column",
@@ -301,7 +299,6 @@ def form() -> widgets.VBox:
         VBox: The complete form interface containing header, main input fields,
               and submission button.
     """
-
     # ######################################
     # GET HANDLER
     # ######################################
