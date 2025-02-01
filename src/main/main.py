@@ -107,7 +107,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     """
     # HANDLE ENVIRONMENT VARIABLES
     env_vars = {
-        "seq_start": f'"{today.strftime('%Y-%m-%d')}"',
+        "seq_start": f"{today.strftime('%Y-%m-%d')}",
         "nb": int(os.environ.get("NB", 0)),
         "nb_name": os.environ.get("NB_NAME", "NB"),
         "seq_notation": int(os.environ.get("SEQ_NOTATION", 0)),
@@ -121,7 +121,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         for i, line in enumerate(lines):
 
             if line.startswith("SEQ_START="):
-                lines[i] = f"SEQ_START={env_vars["seq_start"]}\n"
+                lines[i] = f'"SEQ_START={env_vars["seq_start"]}\n"'
 
             if line.startswith("NB="):
                 lines[i] = f"NB={env_vars["nb"]}\n"
