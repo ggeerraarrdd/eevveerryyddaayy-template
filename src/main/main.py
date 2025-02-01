@@ -59,7 +59,6 @@ def validate_runs(handler: PackageHandler) -> bool:
         - Config directory must exist
         - Solutions directory must be accessible, if exists
     """
-
     seq_start_loc = handler.get_value("config_base", "seq_start_loc")
 
     # Create solutions directory if it doesn't exist
@@ -106,7 +105,6 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         - Solutions directory must be empty
         - SEQ_START must have empty string default value
     """
-
     # HANDLE ENVIRONMENT VARIABLES
     env_vars = {
         "seq_start": f'"{today.strftime('%Y-%m-%d')}"',
@@ -210,7 +208,161 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     return 1
 
 
-def start_runs(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
+def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
+    """
+    Generates a sequence identifier for each entry in the Index table and solution 
+    filename prefix.
+    
+    Args:
+        handler (PackageHandler): Handler containing data
+        today (datetime): Current timestamp for sequence generation
+    
+    Returns:
+        str: Sequence identifier either as a 3-digit number or date string (YYYY-MM-DD)
+        
+    Raises:
+        ValueError: If seq_notation_loc is not 0 or 1
+        
+    Note:
+        Uses seq_notation_loc to determine sequence format:
+        - 0: Three digit sequence (e.g. "001")
+        - 1: Date format (e.g. "2025-01-31")
+    """
+    seq_start_loc = handler.get_value("config_base", "seq_start_loc")
+    seq_notation_loc = handler.get_value("config_base", "seq_notation_loc")
+
+    with os.scandir(SOLUTIONS_DIR) as entries:
+        files = sorted(entry.name for entry in entries)
+
+    if files:
+
+        file_last = files[-1]
+
+        if seq_notation_loc == 0:
+
+            seq_last = int(file_last[:3])
+
+            seq_next = seq_last + 1
+
+            seq_actual = datetime.strptime(seq_start_loc, "%Y-%m-%d")
+            seq_actual = seq_actual.date()
+            seq_actual = (today.date() - seq_actual).days + 1
+
+            seq = f"{seq_actual:03d}"
+
+        elif seq_notation_loc == 1:
+
+            seq_last = datetime.strptime(file_last[:10], "%Y-%m-%d")
+            seq_last = seq_last.date()
+
+            seq_next = seq_last + timedelta(days=1)
+
+            seq_actual = datetime.now().date()
+
+            seq = seq_actual.strftime("%Y-%m-%d")
+
+        else:
+
+            raise ValueError("Invalid configuration: TODO")
+
+        if seq_last == seq_actual:
+            print("Note: You have submitted more than 1 entry today.")
+        elif seq_next <= seq_last:
+            pass
+        else:
+            print("Note: Invalid sequence. Processing not terminated.")
+
+    else:
+
+        if seq_notation_loc == 0:
+
+            seq = "001"
+
+        elif seq_notation_loc == 1:
+
+            seq = today.strftime("%Y-%m-%d")
+
+        else:
+
+            raise ValueError("Invalid configuration: TODO")
+
+    return seq
+
+
+def open_runs_file(title: str, seq: str) -> str:
+    """
+    Creates a standardized filename from title and sequence identifier.
+    
+    Args:
+        title (str): Problem title to be converted into filename
+        seq (str): Sequence identifier (either numeric or date format)
+    
+    Returns:
+        str: Formatted filename in the pattern "{seq}_{sanitized_title}.md"
+    """
+    filename = title.lower()
+    filename = re.sub(r"[^a-z0-9\s-]", "", filename)
+    filename = filename.replace(" ", "_")
+    filename = filename.replace("-", "_")
+    filename = f"{seq}_{filename.strip()}.md"
+
+
+    return filename
+
+
+def open_runs_dicts(handler: PackageHandler, seq: str, new_package: dict, filename: str) -> int:
+    """
+    Updates PackageHandler dictionaries.
+    
+    Args:
+        handler (PackageHandler): Handler for managing package data
+        seq (str): Sequence identifier
+        new_package (dict[str, str]): Dictionary containing problem information
+        filename (str): Generated filename for the solution
+    
+    Returns:
+        int: 1 if update successful
+        
+    Updates:
+        - package: Data submitted through form
+        - entry_data: Formatted form data for display
+        - entry_data_widths: Column width calculations for display formatting
+    """
+    # Update package
+    handler.update_value("package", "day", seq)
+    handler.update_value("package", "url", new_package["url"])
+    handler.update_value("package", "title", new_package["title"])
+    handler.update_value("package", "site", new_package["site"])
+    handler.update_value("package", "difficulty", new_package["difficulty"])
+    handler.update_value("package", "problem", new_package["problem"])
+    handler.update_value("package", "submitted_solution", new_package["submitted_solution"])
+    handler.update_value("package", "site_solution", new_package["site_solution"])
+    handler.update_value("package", "notes", new_package["notes"])
+    handler.update_value("package", "nb", new_package["nb"])
+    handler.update_value("package", "filename", filename)
+
+    # Update entry_data
+    handler.update_value("entry_data", "day", seq)
+    handler.update_value("entry_data", "title", f"[{new_package["title"]}]({new_package["url"]})")
+    handler.update_value("entry_data", "solution", f"[Solution](solutions/{filename})")
+    handler.update_value("entry_data", "site", new_package["site"])
+    handler.update_value("entry_data", "difficulty", new_package["difficulty"])
+    handler.update_value("entry_data", "nb", new_package["nb"])
+
+    # Update entry_data_widths
+    handler.update_value("entry_data_widths", "day", len(seq) + 2)
+    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]}") + 2)
+    handler.update_value("entry_data_widths", "solution", len(f"[Solution](solutions/{filename})") + 2)
+    handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
+    handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
+    handler.update_value("entry_data_widths", "nb", len(new_package["nb"]) + 2)
+
+
+
+    return 1
+
+
+def open_runs(handler: PackageHandler, package_list: list[str], today: datetime) -> int:
     """
     Sets up first and regular runs by processing project information and 
     updating dictionaries.
@@ -236,10 +388,10 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: datetime
         -- Does not update handler.config_cols_widths dictionary
 
     Prerequisites:
+        - Properly initialized config.py, if first run
         - Properly initialized PackageHandler
         - Valid package_list with all required elements from Jupyter Notebook form
     """
-
     new_package = {
         "url": package_list[0],
         "title": package_list[1],
@@ -252,97 +404,17 @@ def start_runs(handler: PackageHandler, package_list: list[str], today: datetime
         "nb": package_list[8]
     }
 
-    # Get sequence
-    seq_notation_loc = handler.get_value("config_base", "seq_notation_loc")
+    # Create sequence
+    seq = open_runs_seq(handler, today)
 
-    with os.scandir(SOLUTIONS_DIR) as entries:
-        files = sorted(entry.name for entry in entries)
+    # Create filename
+    filename = open_runs_file(new_package["title"], seq)
 
-    if files:
-
-        file_last = files[-1]
-
-        if seq_notation_loc == 0:
-
-            file_counter = int(file_last[:3]) + 1
-            day = f"{file_counter:03d}"
-
-        elif seq_notation_loc == 1:
-
-            file_counter = datetime.strptime(file_last[:10], "%Y-%m-%d")
-
-            if file_counter == today:
-                print("Note: You have submitted more than 1 entry today.")
-                day = file_counter.strftime("%Y-%m-%d")
-            elif file_counter < today:
-                file_counter = file_counter + timedelta(days=1)
-                day = file_counter.strftime("%Y-%m-%d")
-            else:
-                print("Note: Invalid sequence. Processing not terminated.")
-                day = file_counter.strftime("%Y-%m-%d")
-
-        else:
-
-            raise ValueError("Invalid configuration: TODO")
-
-    else:
-
-        if seq_notation_loc == 0:
-
-            day = "001"
-
-        elif seq_notation_loc == 1:
-
-            day = today.strftime("%Y-%m-%d")
-
-        else:
-
-            raise ValueError("Invalid configuration: TODO")
+    # Update PackageHandler dicts
+    results = open_runs_dicts(handler, seq, new_package, filename)
 
 
-    # Get filename
-    filename = new_package["title"].lower()
-    filename = re.sub(r"[^a-z0-9\s-]", "", filename)
-    filename = filename.replace(" ", "_")
-    filename = filename.replace("-", "_")
-    filename = f"{day}_{filename.strip()}.md"
-
-
-    # ######################################
-    #
-    # GET DICTIONARIES UPDATED
-    #
-    # ######################################
-    # Update package
-    handler.update_value("package", "day", day)
-    handler.update_value("package", "url", new_package["url"])
-    handler.update_value("package", "title", new_package["title"])
-    handler.update_value("package", "site", new_package["site"])
-    handler.update_value("package", "difficulty", new_package["difficulty"])
-    handler.update_value("package", "problem", new_package["problem"])
-    handler.update_value("package", "submitted_solution", new_package["submitted_solution"])
-    handler.update_value("package", "site_solution", new_package["site_solution"])
-    handler.update_value("package", "notes", new_package["notes"])
-    handler.update_value("package", "nb", new_package["nb"])
-    handler.update_value("package", "filename", filename)
-
-    # Update entry_data
-    handler.update_value("entry_data", "day", day)
-    handler.update_value("entry_data", "title", f"[{new_package["title"]}]({new_package["url"]})")
-    handler.update_value("entry_data", "solution", f"[Solution](solutions/{filename})")
-    handler.update_value("entry_data", "site", new_package["site"])
-    handler.update_value("entry_data", "difficulty", new_package["difficulty"])
-    handler.update_value("entry_data", "nb", new_package["nb"])
-
-    # Update entry_data_widths
-    handler.update_value("entry_data_widths", "day", len(day) + 2)
-    handler.update_value("entry_data_widths", "title", len(f"[{new_package["title"]}]({new_package["url"]})") + 2)
-    handler.update_value("entry_data_widths", "solution", len(f"[Solution](solutions/{filename})") + 2)
-    handler.update_value("entry_data_widths", "site", len(new_package["site"]) + 2)
-    handler.update_value("entry_data_widths", "difficulty", len(new_package["difficulty"]) + 2)
-    handler.update_value("entry_data_widths", "nb", len(new_package["nb"]) + 2)
-
-    return 1
+    return results
 
 
 def implement_runs(handler: PackageHandler) -> int:
@@ -366,7 +438,6 @@ def implement_runs(handler: PackageHandler) -> int:
         - Properly updated dictionaries (package, entry_data, entry_data_widths)
         - Valid README.md with index block markers
     """
-
     # ######################################
     # CREATE NEW FILE
     # ######################################
@@ -456,7 +527,6 @@ def close_runs(column_widths: dict) -> int:
     Returns:
         int: Returns 1 on successful completion
     """
-
     with open(f"{CONFIG_DIR}/columns.py", 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
@@ -497,7 +567,6 @@ def handle_runs_default(handler: PackageHandler, today: datetime, data: dict) ->
         3. Implements run settings
         4. Updates configuration columns
     """
-
     if data["nb"] is None:
         nb = "TBD"
     else:
@@ -518,7 +587,7 @@ def handle_runs_default(handler: PackageHandler, today: datetime, data: dict) ->
     # ######################################
     # RUNS - START (FIRST OR REGULAR)
     # ######################################
-    start_runs(handler, new_package, today)
+    open_runs(handler, new_package, today)
 
 
     # ######################################
