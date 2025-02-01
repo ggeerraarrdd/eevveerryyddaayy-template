@@ -7,7 +7,9 @@ Jupyter notebook environment.
 """
 
 # Python Standard Library
+from ast import literal_eval
 from datetime import datetime
+import os
 
 # Third-Party Libraries
 import ipywidgets as widgets
@@ -26,7 +28,6 @@ from .main import initialize_runs
 
 
 
-# %% Layout Settings
 # Common layout settings
 base_layout = {
     'width': '50%',
@@ -50,11 +51,37 @@ title_widget = widgets.Textarea(
     layout=text_layout
 )
 
-site_widget = widgets.Dropdown(
-    options=['', 'LeetCode', 'HackerRank', 'DataLemur', 'Other'],
-    value='',
-    layout=text_layout
-)
+site_options = os.getenv("SITE_OPTIONS")
+
+if site_options:
+    # Convert list to string representation for literal_eval
+    if isinstance(site_options, list):
+        site_options_str = str(site_options) # pylint: disable=invalid-name
+    else:
+        site_options_str = site_options
+
+    options_list = literal_eval(site_options_str)
+
+    # If only one option, make it both the options and default value
+    if len(options_list) == 1:
+        site_widget = widgets.Dropdown(
+            options=[options_list[0]],
+            value=options_list[0],
+            layout=text_layout
+        )
+    else:
+        site_widget = widgets.Dropdown(
+            options=[""] + options_list,
+            value="",
+            layout=text_layout
+        )
+else:
+    # Default options if environment variable is not set
+    site_widget = widgets.Dropdown(
+        options=["", "DataLemur", "HackerRank", "LeetCode"],
+        value="",
+        layout=text_layout
+    )
 
 difficulty_widget = widgets.Dropdown(
     options=['', 'Easy', 'Medium', 'Hard'],
@@ -95,7 +122,6 @@ page_title_widget = widgets.Text(
     placeholder='Enter page title',
     layout=textarea_layout
 )
-# %%
 
 
 
