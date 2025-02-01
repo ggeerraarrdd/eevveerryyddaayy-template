@@ -146,38 +146,36 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
                 'end': '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
             }
 
-        start_line_readme = None
-        end_line_readme = None
-
         index_header = {
             'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
             'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(env_vars["nb_name"]) + 2) } |'
         }
 
+        start_line_readme = None
+        end_line_readme = None
+        lines_readme = []
+        lines_template = []
+
         with open('README.md', 'r+', encoding='utf-8') as file:
-            lines = file.readlines()
+            lines_readme = file.readlines()
 
-            for i in range(len(lines)-1, -1, -1):
+            for i in range(len(lines_readme)-1, -1, -1):
 
-                if index_block['start'] in lines[i]:
+                if index_block['start'] in lines_readme[i]:
                     start_line_readme = i
 
-                if index_block['end'] in lines[i]:
+                if index_block['end'] in lines_readme[i]:
                     end_line_readme = i
 
-            for j in range(start_line_readme + 1, end_line_readme):
+            lines_readme[start_line_readme + 1] = f'{index_header["labels"]}\n'
+            lines_readme[start_line_readme + 2] = f'{index_header["sep"]}\n'
 
-                if j == start_line_readme + 1:
-                    lines[j] = f'{index_header["labels"]}\n'
+            for j in range(start_line_readme + 3, end_line_readme):
 
-                if j == start_line_readme + 2:
-                    lines[j] = f'{index_header["sep"]}\n'
-
-                if j > start_line_readme + 2:
-                    lines[j] = ''
+                lines_readme[j] = ''
 
             file.seek(0)
-            file.writelines(lines)
+            file.writelines(lines_readme)
             file.truncate()
 
         # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
