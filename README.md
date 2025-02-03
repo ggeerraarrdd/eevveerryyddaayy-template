@@ -10,9 +10,7 @@ One [ ] problem a day for [ ]
 
 <!-- markdownlint-enable MD028 -->
 > [!NOTE]
-> This is the templatized version of [`SQL Everyday`](https://github.com/ggeerraarrdd/sql-everyday).
->
-> For info about this Github template repository, including instructions on installation, configruation and usage, go [here](https://github.com/ggeerraarrdd/eevveerryyddaayy).
+> This is the templatized version of [`SQL Everyday`](https://github.com/ggeerraarrdd/sql-everyday). For documentation about this Github template repository, including instructions on installation, configruation and usage, go [here](https://github.com/ggeerraarrdd/eevveerryyddaayy).
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 
