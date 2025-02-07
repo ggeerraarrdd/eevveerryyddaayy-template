@@ -161,10 +161,10 @@ cython_debug/
 # .idea/
 
 # Pylint
-.pylintrc
+# .pylintrc
 
 # markdownlint.config
-.markdownlint*
+# .markdownlint*
 
 # macOS
 .DS_Store
