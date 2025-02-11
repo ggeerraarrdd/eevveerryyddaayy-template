@@ -22,11 +22,12 @@ Parameters
 SEQ_START : str
     Values:
         '' : Empty string - enables initialization on first run
-        'YYYY-MM-DD' : Specific date - prevents initialization
+        'YYYY‑MM‑DD' : Specific date - prevents initialization
+                       (uses U+2011 non-breaking hyphen)
     Default: '' (empty string)
 
 Example:
-    '2025-01-01'
+    '2025‑01‑01' # Note: Uses non-breaking hyphens
 
 Notes:
     When set to empty string, initialization will occur on first run
