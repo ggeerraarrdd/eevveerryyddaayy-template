@@ -82,13 +82,14 @@ Parameters
 SEQ_NOTATION : int
     Values:
         0: Three-digit zero-padded number (e.g., '001', '002')
-        1: Full ISO date format (e.g., '2001-01-01')
+        1: Full ISO date format with non-breaking hyphens U+2011 (e.g., '2001‑01‑01')
     Default: 0
 
 Notes:
-    The chosen format affects all 'Day' values throughout the sequence. 
-    Three-digit format (0) is more compact but date format (1) provides 
-    more temporal context.
+    1. The chosen format affects all 'Day' values throughout the sequence. 
+    2. Three-digit format (0) is more compact but date format (1) provides 
+       more temporal context. 
+    3. When using format 1, dates use Unicode non-breaking hyphens (U+2011).
 """
 SEQ_NOTATION=0
 

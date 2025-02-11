@@ -224,10 +224,13 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
     Note:
         Uses seq_notation_loc to determine sequence format:
         - 0: Three digit sequence (e.g. "001")
-        - 1: Date format (e.g. "2025-01-31")
+        - 1: Date format (e.g. "2025‑01‑31")
     """
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
+
+    # Non-breaking hyphen
+    hyphen = "\u2011"
 
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
@@ -242,7 +245,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
             # seq_next = seq_last + 1
 
-            seq_actual = datetime.strptime(seq_start_loc, '%Y-%m-%d')
+            seq_actual = datetime.strptime(seq_start_loc, f'%Y{hyphen}%m{hyphen}%d')
             seq_actual = seq_actual.date()
             seq_actual = (today.date() - seq_actual).days + 1
 
@@ -250,14 +253,14 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
         elif seq_notation_loc == 1:
 
-            seq_last = datetime.strptime(file_last[:10], '%Y-%m-%d')
+            seq_last = datetime.strptime(file_last[:10], f'%Y{hyphen}%m{hyphen}%d')
             seq_last = seq_last.date()
 
             # seq_next = seq_last + timedelta(days=1)
 
             seq_actual = datetime.now().date()
 
-            seq = seq_actual.strftime('%Y-%m-%d')
+            seq = seq_actual.strftime(f'%Y{hyphen}%m{hyphen}%d')
 
         else:
 
@@ -278,7 +281,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
         elif seq_notation_loc == 1:
 
-            seq = today.strftime('%Y-%m-%d')
+            seq = today.strftime(f'%Y{hyphen}%m{hyphen}%d')
 
         else:
 
