@@ -106,9 +106,12 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         - Solutions directory must be empty
         - SEQ_START must have empty string default value
     """
+    # Non-breaking hyphen
+    hyphen = "\u2011"
+    
     # HANDLE ENVIRONMENT VARIABLES
     env_vars = {
-        'seq_start': today.strftime('%Y-%m-%d'),
+        'seq_start': today.strftime(f'%Y{hyphen}%m{hyphen}%d'),
         'nb': int(os.environ.get('NB', 0)),
         'nb_name': os.environ.get('NB_NAME', 'NB'),
         'seq_notation': int(os.environ.get('SEQ_NOTATION', 0)),
