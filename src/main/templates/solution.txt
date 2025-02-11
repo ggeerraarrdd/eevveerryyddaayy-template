@@ -1,4 +1,4 @@
-# [ ] Everyday \#{{ day }}
+# [ ] Everyday \#{{ seq_full }}
 
 ## {{ title }}
 

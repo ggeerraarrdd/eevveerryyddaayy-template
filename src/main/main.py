@@ -209,7 +209,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     return 1
 
 
-def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
+def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
     """
     Generates a sequence identifier for each entry in the Index table and solution 
     filename prefix.
@@ -219,7 +219,9 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
         today (datetime): Current timestamp for sequence generation
     
     Returns:
-        str: Sequence identifier either as a 3-digit number or date string (YYYY-MM-DD)
+        tuple[str, str]: Tuple containing (sequence_id, full_sequence_id) where:
+            - sequence_id: Either a 3-digit number or date string (YYYY‑MM‑DD)
+            - full_sequence_id: sequence_id with suffix (e.g. "001_01" or "2025‑01‑31_01")
         
     Raises:
         ValueError: If seq_notation_loc is not 0 or 1
@@ -227,7 +229,8 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
     Note:
         Uses seq_notation_loc to determine sequence format:
         - 0: Three digit sequence (e.g. "001")
-        - 1: Date format (e.g. "2025‑01‑31")
+        - 1: Date format using Unicode non-breaking hyphens U+2011 (e.g. "2025‑01‑31")
+
     """
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
@@ -242,11 +245,12 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
         file_last = files[-1]
 
+        # Handle sequence partials
         if seq_notation_loc == 0:
 
             seq_last = int(file_last[:3])
-
-            # seq_next = seq_last + 1
+            
+            seq_last_suffix = int(file_last[4:6])
 
             seq_actual = datetime.strptime(seq_start_loc, f'%Y{hyphen}%m{hyphen}%d')
             seq_actual = seq_actual.date()
@@ -259,7 +263,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
             seq_last = datetime.strptime(file_last[:10], f'%Y{hyphen}%m{hyphen}%d')
             seq_last = seq_last.date()
 
-            # seq_next = seq_last + timedelta(days=1)
+            seq_last_suffix = int(file_last[11:13])
 
             seq_actual = datetime.now().date()
 
@@ -269,10 +273,16 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
 
             raise ValueError('Invalid configuration: TODO')
 
+        # Handle full sequence
         if seq_last == seq_actual:
+            seq_suffix = seq_last_suffix + 1
+            seq_suffix = f'{seq_suffix:02d}'
+            seq_full = f'{seq}_{seq_suffix}'
             print('Note: You have submitted more than 1 entry today.')
+
         elif seq_last < seq_actual:
-            pass
+            seq_full = f'{seq}_01'
+
         else:
             print('Note: Invalid sequence. Processing not terminated.')
 
@@ -281,19 +291,21 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> str:
         if seq_notation_loc == 0:
 
             seq = '001'
+            seq_full = '001_01'
 
         elif seq_notation_loc == 1:
 
             seq = today.strftime(f'%Y{hyphen}%m{hyphen}%d')
+            seq_full = today.strftime(f'%Y{hyphen}%m{hyphen}%d_01')
 
         else:
 
             raise ValueError('Invalid configuration: TODO')
 
-    return seq
+    return seq, seq_full
 
 
-def open_runs_file(title: str, seq: str) -> str:
+def open_runs_file(title: str, seq_full: str) -> str:
     """
     Creates a standardized filename from title and sequence identifier.
     
@@ -308,13 +320,13 @@ def open_runs_file(title: str, seq: str) -> str:
     filename = re.sub(r'[^a-z0-9\s-]', '', filename)
     filename = filename.replace(' ', '_')
     filename = filename.replace('-', '_')
-    filename = f'{seq}_{filename.strip()}.md'
+    filename = f'{seq_full}_{filename.strip()}.md'
 
 
     return filename
 
 
-def open_runs_dicts(handler: PackageHandler, seq: str, new_package: dict, filename: str) -> int:
+def open_runs_dicts(handler: PackageHandler, seq: str, seq_full: str, new_package: dict, filename: str) -> int:
     """
     Updates PackageHandler dictionaries.
     
@@ -343,6 +355,7 @@ def open_runs_dicts(handler: PackageHandler, seq: str, new_package: dict, filena
     handler.update_value('package', 'site_solution', new_package["site_solution"])
     handler.update_value('package', 'notes', new_package["notes"])
     handler.update_value('package', 'nb', new_package["nb"])
+    handler.update_value('package', 'seq_full', seq_full)
     handler.update_value('package', 'filename', filename)
 
     # Update entry_data
@@ -408,13 +421,13 @@ def open_runs(handler: PackageHandler, package_list: list[str], today: datetime)
     }
 
     # Create sequence
-    seq = open_runs_seq(handler, today)
+    seq, seq_full = open_runs_seq(handler, today)
 
     # Create filename
-    filename = open_runs_file(new_package['title'], seq)
+    filename = open_runs_file(new_package['title'], seq_full)
 
     # Update PackageHandler dicts
-    results = open_runs_dicts(handler, seq, new_package, filename)
+    results = open_runs_dicts(handler, seq, seq_full, new_package, filename)
 
 
     return results

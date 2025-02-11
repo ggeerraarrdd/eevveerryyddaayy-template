@@ -40,6 +40,7 @@ class PackageHandler:
                 'site_solution': '',
                 'notes': '',
                 'nb': '',
+                'seq_full': '',
                 'filename': '',
                 'lastline': '\n',
             },
