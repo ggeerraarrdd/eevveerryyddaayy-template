@@ -12,7 +12,31 @@
 
 
 """
-Project Start Date
+Project: Title
+===========================================================================
+
+Sets the project title that will be used in generated files.
+
+Parameters
+----------
+PROJ_TITLE : str
+    The name of the project to be used in file headers and templates.
+    Default: '[ ] Everyday'
+
+Example:
+    'SQL Everyday'
+
+Notes:
+    The title will be consistently used across all generated files
+"""
+PROJ_TITLE='[ ] Everyday'
+
+
+
+
+
+"""
+Project: Start Date
 ===========================================================================
 
 Controls initialization behavior through start date setting.

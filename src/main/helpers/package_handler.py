@@ -4,6 +4,7 @@ TD
 
 
 # Local
+from src.main.config import PROJ_TITLE
 from src.main.config import SEQ_START
 from src.main.config import NB
 from src.main.config import NB_NAME
@@ -73,6 +74,7 @@ class PackageHandler:
             # },
 
             'config_base': {
+                'proj_title_loc': PROJ_TITLE,
                 'seq_start_loc': SEQ_START,
                 'nb_loc': NB,
                 'nb_name_loc': NB_NAME,

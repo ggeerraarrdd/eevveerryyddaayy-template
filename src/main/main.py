@@ -115,6 +115,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         'nb': int(os.environ.get('NB', 0)),
         'nb_name': os.environ.get('NB_NAME', 'NB'),
         'seq_notation': int(os.environ.get('SEQ_NOTATION', 0)),
+        # 'seq_sparse': int(os.environ.get('SEQ_SPARSE', 0))
     }
 
     # HANDLE CONFIG.PY
@@ -122,6 +123,9 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         lines = file.readlines()
 
         for i, line in enumerate(lines):
+
+            if line.startswith('PROJ_TITLE='):
+                lines[i] = f'PROJ_TITLE=\'{env_vars["proj_title"]}\'\n'
 
             if line.startswith('SEQ_START='):
                 lines[i] = f'SEQ_START=\'{env_vars["seq_start"]}\'\n'
@@ -139,6 +143,28 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         file.writelines(lines)
         file.truncate()
 
+    # HANDLE PROJECT TITLE
+    if env_vars['proj_title'] != '[ ] Everyday':
+
+        # HANDLE README
+        with open('README.md', 'r+', encoding='utf-8') as file:
+            lines_readme_title = file.readlines()
+
+            lines_readme_title[0] = f'# {env_vars['proj_title']}\n'
+
+            file.seek(0)
+            file.writelines(lines_readme_title)
+            file.truncate()
+
+        # HANDLE TEMPLATE
+        with open('src/main/templates/solution.txt', 'r+', encoding='utf-8') as file:
+            lines_template_title = file.readlines()
+
+            lines_template_title[0] = f'# {env_vars["proj_title"]} \\#{{{{ seq_full }}}}\n'
+
+            file.seek(0)
+            file.writelines(lines_template_title)
+            file.truncate()
 
     # HANDLE EXTRA COLUMN (aka NB)
     if env_vars['nb'] == 1:
@@ -194,8 +220,11 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
 
         print(f'Extra column selected: {env_vars["nb_name"]}')
 
+    # HANDLE .env
+    # TD
 
     # UPDATE DICTS
+    handler.update_value('config_base', 'proj_title_loc', env_vars['proj_title'])
     handler.update_value('config_base', 'seq_start_loc', env_vars['seq_start'])
     handler.update_value('config_base', 'nb_loc', env_vars['nb'])
     handler.update_value('config_base', 'nb_name_loc', env_vars['nb_name'])
@@ -230,7 +259,6 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
         Uses seq_notation_loc to determine sequence format:
         - 0: Three digit sequence (e.g. "001")
         - 1: Date format using Unicode non-breaking hyphens U+2011 (e.g. "2025‑01‑31")
-
     """
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
@@ -472,18 +500,18 @@ def implement_runs(handler: PackageHandler) -> int:
 
 
     # ######################################
-    # CREATE NEW LINE
+    # README INDEX - CREATE NEW LINE
     # ######################################
     if handler.get_value('entry_data', 'nb') == 'TBD':
         handler.update_value('entry_data', 'nb', '')
-
+    
     new_entry = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
                                         handler.get_dictionary('entry_data'),
                                         handler.get_dictionary('config_cols_widths'))
 
 
     # ######################################
-    # GET TARGET LINES FROM README
+    # README INDEX - UPDATE OLD LINE(S)
     # ######################################
     index_block = {
         'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
