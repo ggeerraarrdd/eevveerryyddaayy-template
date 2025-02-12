@@ -21,6 +21,7 @@ import os
 import re
 
 # Local
+from .config import PROJ_TITLE
 from .config import NB
 from .config import NB_NAME
 from .config import SEQ_NOTATION
@@ -115,6 +116,7 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     # HANDLE ENVIRONMENT VARIABLES
     # Use global as default
     env_vars = {
+        'proj_title': os.environ.get('PROJ_TITLE', PROJ_TITLE),
         'seq_start': today.strftime(f'%Y{hyphen}%m{hyphen}%d'),
         'nb': int(os.environ.get('NB', NB)),
         'nb_name': os.environ.get('NB_NAME', NB_NAME),
