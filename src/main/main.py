@@ -21,6 +21,9 @@ import os
 import re
 
 # Local
+from .config import NB
+from .config import NB_NAME
+from .config import SEQ_NOTATION
 from .config import SOLUTIONS_DIR
 from .config import CONFIG_DIR
 from .config import TEMPLATES_DIR
@@ -110,12 +113,13 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
     hyphen = "\u2011"
     
     # HANDLE ENVIRONMENT VARIABLES
+    # Use global as default
     env_vars = {
         'seq_start': today.strftime(f'%Y{hyphen}%m{hyphen}%d'),
-        'nb': int(os.environ.get('NB', 0)),
-        'nb_name': os.environ.get('NB_NAME', 'NB'),
-        'seq_notation': int(os.environ.get('SEQ_NOTATION', 0)),
-        # 'seq_sparse': int(os.environ.get('SEQ_SPARSE', 0))
+        'nb': int(os.environ.get('NB', NB)),
+        'nb_name': os.environ.get('NB_NAME', NB_NAME),
+        'seq_notation': int(os.environ.get('SEQ_NOTATION', SEQ_NOTATION)),
+        # 'seq_sparse': int(os.environ.get('SEQ_SPARSE', SEQ_SPARSE))
     }
 
     # HANDLE CONFIG.PY
@@ -500,7 +504,7 @@ def implement_runs(handler: PackageHandler) -> int:
 
 
     # ######################################
-    # README INDEX - CREATE NEW LINE
+    # CREATE NEW LINE
     # ######################################
     if handler.get_value('entry_data', 'nb') == 'TBD':
         handler.update_value('entry_data', 'nb', '')
@@ -511,7 +515,7 @@ def implement_runs(handler: PackageHandler) -> int:
 
 
     # ######################################
-    # README INDEX - UPDATE OLD LINE(S)
+    # UPDATE INDEX
     # ######################################
     index_block = {
         'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
