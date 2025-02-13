@@ -38,6 +38,12 @@ from .helpers import PackageHandler
 # Non-breaking hyphen
 HYPHEN = "\u2011"
 
+INDEX_START = '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->'
+INDEX_END = '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
+
+
+
+
 
 
 
@@ -92,37 +98,17 @@ def validate_runs(handler: PackageHandler) -> bool:
     return results
 
 
-def initialize_runs(handler: PackageHandler, today: datetime) -> int:
+def initialize_project_config(env_vars: dict[str, str | int]) -> int:
     """
-    Initializes the project for first run, setting up necessary user configurations.
+    Updates config.py with environment variables.
 
     Args:
-        handler (PackageHandler): Package handler instance for managing configurations
-        today (datetime): Current date used for initialization
+        env_vars: Dictionary containing project configuration values
+            Keys: 'proj_title', 'seq_start', 'nb', 'nb_name', 'seq_notation'
 
     Returns:
-        int: 1 if initialization successful
-
-    Side Effects:
-        - Prevents future initialization by setting SEQ_START
-        - Locks Index to 5 or 6 columns
-
-    Prerequisites:
-        - Solutions directory must be empty
-        - SEQ_START must have empty string default value
+        int: 1 if configuration update successful
     """
-    # HANDLE ENVIRONMENT VARIABLES
-    # Use global as default
-    env_vars = {
-        'proj_title': os.environ.get('PROJ_TITLE', PROJ_TITLE),
-        'seq_start': today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d'),
-        'nb': int(os.environ.get('NB', NB)),
-        'nb_name': os.environ.get('NB_NAME', NB_NAME),
-        'seq_notation': int(os.environ.get('SEQ_NOTATION', SEQ_NOTATION)),
-        # 'seq_sparse': int(os.environ.get('SEQ_SPARSE', SEQ_SPARSE))
-    }
-
-    # HANDLE CONFIG.PY
     with open(f'{CONFIG_DIR}/config.py', 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
@@ -147,93 +133,154 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         file.writelines(lines)
         file.truncate()
 
+
+    return 1
+
+
+def initialize_project_title(env_vars: dict[str, str | int]) -> int:
+    """
+    Updates project title in README and solution template files.
+
+    Args:
+        env_vars: Dictionary containing project configuration values
+            Required key: 'proj_title'
+
+    Returns:
+        int: 1 if title update successful
+    """
+    # HANDLE README
+    with open('README.md', 'r+', encoding='utf-8') as file:
+        lines_readme_title = file.readlines()
+
+        lines_readme_title[0] = f'# {env_vars['proj_title']}\n'
+
+        file.seek(0)
+        file.writelines(lines_readme_title)
+        file.truncate()
+
+    # HANDLE TEMPLATE
+    with open('src/main/templates/solution.txt', 'r+', encoding='utf-8') as file:
+        lines_template_title = file.readlines()
+
+        lines_template_title[0] = f'# {env_vars["proj_title"]} \\#{{{{ seq_full }}}}\n'
+
+        file.seek(0)
+        file.writelines(lines_template_title)
+        file.truncate()
+
+
+    return 1
+
+
+def initialize_project_nb(env_vars: dict[str, str | int]) -> int:
+    """
+    Sets up NB in README and solution template files.
+
+    Args:
+        env_vars: Dictionary containing project configuration values
+            Required key: 'nb_name' for extra column header
+
+    Returns:
+        i
+    """
+    index_header = {
+        'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
+        'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(env_vars["nb_name"]) + 2) } |'
+    }
+
+    start_line_readme = None
+    end_line_readme = None
+    lines_readme = []
+    lines_template = []
+
+    with open('README.md', 'r+', encoding='utf-8') as file:
+        lines_readme = file.readlines()
+
+        for i in range(len(lines_readme)-1, -1, -1):
+
+            if INDEX_START in lines_readme[i]:
+                start_line_readme = i
+
+            if INDEX_END in lines_readme[i]:
+                end_line_readme = i
+
+        lines_readme[start_line_readme + 1] = f'{index_header["labels"]}\n'
+        lines_readme[start_line_readme + 2] = f'{index_header["sep"]}\n'
+
+        for j in range(start_line_readme + 3, end_line_readme):
+
+            lines_readme[j] = ''
+
+        file.seek(0)
+        file.writelines(lines_readme)
+        file.truncate()
+
+    # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
+    with open(f'{TEMPLATES_DIR}/solution.txt', 'r+', encoding='utf-8') as file:
+        lines_template = file.readlines()
+
+        lines_template[29] = f'## {env_vars["nb_name"]}\n'
+        lines_template[32] = '\n'
+
+        file.seek(0)
+        file.writelines(lines_template)
+        file.truncate()
+
+    print(f'Extra column selected: {env_vars["nb_name"]}')
+
+
+    return 1
+
+
+def initialize_project(handler: PackageHandler, today: datetime) -> int:
+    """
+    Initializes the project for first run, setting up necessary user configurations.
+
+    Args:
+        handler (PackageHandler): Package handler instance for managing configurations
+        today (datetime): Current date used for initialization
+
+    Returns:
+        int: 1 if initialization successful
+
+    Side Effects:
+        - Sets SEQ_START to prevent future initialization
+        - Configures index table with 5 or 6 columns
+        - Updates configuration dictionaries with new values
+        - Creates or modifies multiple files (config.py, README.md, solution template)
+
+    Prerequisites:
+        - Solutions directory must be empty
+        - SEQ_START must have empty string default value
+        - Required environment variables or defaults must be available
+    """
+    # HANDLE ENVIRONMENT VARIABLES
+    # Use global as default
+    env_vars = {
+        'proj_title': os.environ.get('PROJ_TITLE', PROJ_TITLE),
+        'seq_start': today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d'),
+        'nb': int(os.environ.get('NB', NB)),
+        'nb_name': os.environ.get('NB_NAME', NB_NAME),
+        'seq_notation': int(os.environ.get('SEQ_NOTATION', SEQ_NOTATION)),
+    }
+
+    # HANDLE CONFIG.PY
+    initialize_project_config(env_vars)
+
     # HANDLE PROJECT TITLE
     if env_vars['proj_title'] != '[ ] Everyday':
-
-        # HANDLE README
-        with open('README.md', 'r+', encoding='utf-8') as file:
-            lines_readme_title = file.readlines()
-
-            lines_readme_title[0] = f'# {env_vars['proj_title']}\n'
-
-            file.seek(0)
-            file.writelines(lines_readme_title)
-            file.truncate()
-
-        # HANDLE TEMPLATE
-        with open('src/main/templates/solution.txt', 'r+', encoding='utf-8') as file:
-            lines_template_title = file.readlines()
-
-            lines_template_title[0] = f'# {env_vars["proj_title"]} \\#{{{{ seq_full }}}}\n'
-
-            file.seek(0)
-            file.writelines(lines_template_title)
-            file.truncate()
+        initialize_project_title(env_vars)
 
     # HANDLE EXTRA COLUMN (aka NB)
     if env_vars['nb'] == 1:
+        initialize_project_nb(env_vars)
 
-        # HANDLE SETUP - EXTRA COLUMN (aka NB) - README
-        index_block = {
-                'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
-                'end': '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
-            }
-
-        index_header = {
-            'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
-            'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(env_vars["nb_name"]) + 2) } |'
-        }
-
-        start_line_readme = None
-        end_line_readme = None
-        lines_readme = []
-        lines_template = []
-
-        with open('README.md', 'r+', encoding='utf-8') as file:
-            lines_readme = file.readlines()
-
-            for i in range(len(lines_readme)-1, -1, -1):
-
-                if index_block['start'] in lines_readme[i]:
-                    start_line_readme = i
-
-                if index_block['end'] in lines_readme[i]:
-                    end_line_readme = i
-
-            lines_readme[start_line_readme + 1] = f'{index_header["labels"]}\n'
-            lines_readme[start_line_readme + 2] = f'{index_header["sep"]}\n'
-
-            for j in range(start_line_readme + 3, end_line_readme):
-
-                lines_readme[j] = ''
-
-            file.seek(0)
-            file.writelines(lines_readme)
-            file.truncate()
-
-        # HANDLE SETUP - EXTRA COLUMN (aka NB) - TEMPLATE
-        with open(f'{TEMPLATES_DIR}/solution.txt', 'r+', encoding='utf-8') as file:
-            lines_template = file.readlines()
-
-            lines_template[29] = f'## {env_vars["nb_name"]}\n'
-            lines_template[32] = '\n'
-
-            file.seek(0)
-            file.writelines(lines_template)
-            file.truncate()
-
-        print(f'Extra column selected: {env_vars["nb_name"]}')
-
-    # HANDLE .env
-    # TD
-
-    # UPDATE DICTS
+    # HANDLE DICTS
     handler.update_value('config_base', 'proj_title_loc', env_vars['proj_title'])
     handler.update_value('config_base', 'seq_start_loc', env_vars['seq_start'])
     handler.update_value('config_base', 'nb_loc', env_vars['nb'])
     handler.update_value('config_base', 'nb_name_loc', env_vars['nb_name'])
     handler.update_value('config_base', 'seq_notation_loc', env_vars['seq_notation'])
-
     handler.update_value('config_cols_widths', 'nb', len(env_vars['nb_name']) + 2)
 
     print('First run initialized')

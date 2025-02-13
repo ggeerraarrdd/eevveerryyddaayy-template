@@ -18,7 +18,7 @@ import ipywidgets as widgets
 # Local
 from .helpers import PackageHandler
 from .main import validate_runs
-from .main import initialize_runs
+from .main import initialize_project
 
 
 
@@ -326,7 +326,7 @@ def form() -> widgets.VBox:
 
     if is_run_first:
 
-        initialize_runs(handler, today)
+        initialize_project(handler, today)
 
     elif not is_run_first:
 
