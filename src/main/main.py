@@ -181,7 +181,7 @@ def initialize_project_nb(env_vars: dict[str, str | int]) -> int:
             Required key: 'nb_name' for extra column header
 
     Returns:
-        i
+        int: 1 if nb initialization successful
     """
     index_header = {
         'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
@@ -232,6 +232,34 @@ def initialize_project_nb(env_vars: dict[str, str | int]) -> int:
     return 1
 
 
+def initialize_project_env() -> int:
+    """
+    Comments out configuration variables in .env file to indicate they are initialized.
+    
+    Returns:
+        int: 1 if .env update successful
+    """
+    with open('.env', 'r+', encoding='utf-8') as file:
+        lines_env = file.readlines()
+
+        modified_lines_env = []
+        for line in lines_env:
+            line = line.strip()
+            if (line and
+                not line.startswith('#') and
+                not line.startswith('SITE_OPTIONS')):
+                modified_lines_env.append('# ' + line + '\n')
+            else:
+                modified_lines_env.append(line + '\n')
+
+        file.seek(0)
+        file.writelines(modified_lines_env)
+        file.truncate()
+
+
+    return 1
+
+
 def initialize_project(handler: PackageHandler, today: datetime) -> int:
     """
     Initializes the project for first run, setting up necessary user configurations.
@@ -255,7 +283,6 @@ def initialize_project(handler: PackageHandler, today: datetime) -> int:
         - Required environment variables or defaults must be available
     """
     # HANDLE ENVIRONMENT VARIABLES
-    # Use global as default
     env_vars = {
         'proj_title': os.environ.get('PROJ_TITLE', PROJ_TITLE),
         'seq_start': today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d'),
@@ -274,6 +301,9 @@ def initialize_project(handler: PackageHandler, today: datetime) -> int:
     # HANDLE EXTRA COLUMN (aka NB)
     if env_vars['nb'] == 1:
         initialize_project_nb(env_vars)
+
+    # HANDLE .ENV
+    initialize_project_env()
 
     # HANDLE DICTS
     handler.update_value('config_base', 'proj_title_loc', env_vars['proj_title'])
@@ -313,6 +343,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
     """
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
+    seq_full = ''
 
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
@@ -325,7 +356,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
         if seq_notation_loc == 0:
 
             seq_last = int(file_last[:3])
-            
+
             seq_last_suffix = int(file_last[4:6])
 
             seq_actual = datetime.strptime(seq_start_loc, f'%Y{HYPHEN}%m{HYPHEN}%d')
@@ -552,7 +583,7 @@ def implement_runs(handler: PackageHandler) -> int:
     # ######################################
     if handler.get_value('entry_data', 'nb') == 'TBD':
         handler.update_value('entry_data', 'nb', '')
-    
+
     new_entry = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
                                         handler.get_dictionary('entry_data'),
                                         handler.get_dictionary('config_cols_widths'))
