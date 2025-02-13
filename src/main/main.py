@@ -35,7 +35,8 @@ from .helpers import get_target_line_updated
 from .helpers import PackageHandler
 
 
-
+# Non-breaking hyphen
+HYPHEN = "\u2011"
 
 
 
@@ -110,14 +111,11 @@ def initialize_runs(handler: PackageHandler, today: datetime) -> int:
         - Solutions directory must be empty
         - SEQ_START must have empty string default value
     """
-    # Non-breaking hyphen
-    hyphen = "\u2011"
-    
     # HANDLE ENVIRONMENT VARIABLES
     # Use global as default
     env_vars = {
         'proj_title': os.environ.get('PROJ_TITLE', PROJ_TITLE),
-        'seq_start': today.strftime(f'%Y{hyphen}%m{hyphen}%d'),
+        'seq_start': today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d'),
         'nb': int(os.environ.get('NB', NB)),
         'nb_name': os.environ.get('NB_NAME', NB_NAME),
         'seq_notation': int(os.environ.get('SEQ_NOTATION', SEQ_NOTATION)),
@@ -269,9 +267,6 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
 
-    # Non-breaking hyphen
-    hyphen = "\u2011"
-
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
 
@@ -286,7 +281,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
             
             seq_last_suffix = int(file_last[4:6])
 
-            seq_actual = datetime.strptime(seq_start_loc, f'%Y{hyphen}%m{hyphen}%d')
+            seq_actual = datetime.strptime(seq_start_loc, f'%Y{HYPHEN}%m{HYPHEN}%d')
             seq_actual = seq_actual.date()
             seq_actual = (today.date() - seq_actual).days + 1
 
@@ -294,14 +289,14 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
 
         elif seq_notation_loc == 1:
 
-            seq_last = datetime.strptime(file_last[:10], f'%Y{hyphen}%m{hyphen}%d')
+            seq_last = datetime.strptime(file_last[:10], f'%Y{HYPHEN}%m{HYPHEN}%d')
             seq_last = seq_last.date()
 
             seq_last_suffix = int(file_last[11:13])
 
             seq_actual = datetime.now().date()
 
-            seq = seq_actual.strftime(f'%Y{hyphen}%m{hyphen}%d')
+            seq = seq_actual.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
 
         else:
 
@@ -329,8 +324,8 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
 
         elif seq_notation_loc == 1:
 
-            seq = today.strftime(f'%Y{hyphen}%m{hyphen}%d')
-            seq_full = today.strftime(f'%Y{hyphen}%m{hyphen}%d_01')
+            seq = today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
+            seq_full = today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d_01')
 
         else:
 
