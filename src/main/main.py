@@ -137,13 +137,12 @@ def initialize_project_config(env_vars: dict[str, str | int]) -> int:
     return 1
 
 
-def initialize_project_title(env_vars: dict[str, str | int]) -> int:
+def initialize_project_title(proj_title: str) -> int:
     """
     Updates project title in README and solution template files.
 
     Args:
-        env_vars: Dictionary containing project configuration values
-            Required key: 'proj_title'
+        proj_title (str): Name of project title
 
     Returns:
         int: 1 if title update successful
@@ -152,7 +151,7 @@ def initialize_project_title(env_vars: dict[str, str | int]) -> int:
     with open('README.md', 'r+', encoding='utf-8') as file:
         lines_readme_title = file.readlines()
 
-        lines_readme_title[0] = f'# {env_vars['proj_title']}\n'
+        lines_readme_title[0] = f'# {proj_title}\n'
 
         file.seek(0)
         file.writelines(lines_readme_title)
@@ -162,7 +161,7 @@ def initialize_project_title(env_vars: dict[str, str | int]) -> int:
     with open('src/main/templates/solution.txt', 'r+', encoding='utf-8') as file:
         lines_template_title = file.readlines()
 
-        lines_template_title[0] = f'# {env_vars["proj_title"]} \\#{{{{ seq_full }}}}\n'
+        lines_template_title[0] = f'# {proj_title} \\#{{{{ seq_full }}}}\n'
 
         file.seek(0)
         file.writelines(lines_template_title)
@@ -172,20 +171,19 @@ def initialize_project_title(env_vars: dict[str, str | int]) -> int:
     return 1
 
 
-def initialize_project_nb(env_vars: dict[str, str | int]) -> int:
+def initialize_project_nb(nb_name: str) -> int:
     """
     Sets up NB in README and solution template files.
 
     Args:
-        env_vars: Dictionary containing project configuration values
-            Required key: 'nb_name' for extra column header
+        nb_name (str): Name for extra column header
 
     Returns:
         int: 1 if nb initialization successful
     """
     index_header = {
-        'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {env_vars["nb_name"]}   |',
-        'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(env_vars["nb_name"]) + 2) } |'
+        'labels': f'| Day   | Title   | Solution   | Site   | Difficulty   | {nb_name}   |',
+        'sep': f'| ----- | ------- | ---------- | ------ | ------------ | { "-" * (len(nb_name) + 2) } |'
     }
 
     start_line_readme = None
@@ -219,14 +217,14 @@ def initialize_project_nb(env_vars: dict[str, str | int]) -> int:
     with open(f'{TEMPLATES_DIR}/solution.txt', 'r+', encoding='utf-8') as file:
         lines_template = file.readlines()
 
-        lines_template[29] = f'## {env_vars["nb_name"]}\n'
+        lines_template[29] = f'## {nb_name}\n'
         lines_template[32] = '\n'
 
         file.seek(0)
         file.writelines(lines_template)
         file.truncate()
 
-    print(f'Extra column selected: {env_vars["nb_name"]}')
+    print(f'Extra column selected: {nb_name}')
 
 
     return 1
@@ -296,11 +294,11 @@ def initialize_project(handler: PackageHandler, today: datetime) -> int:
 
     # HANDLE PROJECT TITLE
     if env_vars['proj_title'] != '[ ] Everyday':
-        initialize_project_title(env_vars)
+        initialize_project_title(env_vars['proj_title'])
 
     # HANDLE EXTRA COLUMN (aka NB)
     if env_vars['nb'] == 1:
-        initialize_project_nb(env_vars)
+        initialize_project_nb(env_vars['nb_name'])
 
     # HANDLE .ENV
     initialize_project_env()
