@@ -126,8 +126,6 @@ SEQ_NOTATION=0
 Index Table: Sequential Numbering Gaps for First Column ('Day')
 ===========================================================================
 
-NOTE: Feature not yet implemented.
-
 This setting determines how the system handles 'Day' values that are 
 missing from the sequence numbering.
 
@@ -151,12 +149,12 @@ Example:
     
     For date format (SEQ_NOTATION=1):
     If SEQ_SPARSE=0: Missing a day creates sequence
-        2025-01-01
-        2025-01-03
+        2025‑01‑01
+        2025‑01‑03
     If SEQ_SPARSE=1: Missing a day creates sequence
-        2025-01-01
-        2025-01-02 [all other columns blank]
-        2025-01-03
+        2025‑01‑01
+        2025‑01‑02 [all other columns blank]
+        2025‑01‑03
 
 Notes:
     Setting SEQ_SPARSE=1 helps with accountability by making missed days 

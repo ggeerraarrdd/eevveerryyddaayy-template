@@ -114,11 +114,13 @@ def get_target_line_dict(nb_loc, line: str) -> Dict[str, str]:
     return results
 
 
-def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]) -> str:
+def get_target_line_updated(is_second_line: bool, nb_local: int, data: Dict[str, str], widths: Dict[str, int]) -> str:
     """
     Format a table line with proper padding based on column widths.
 
     Args:
+        is_second_line: Boolean indicating if this is the second line of Index table
+        nb: Integer specifying configuration of sixth column
         data: Dictionary containing table cell values
         widths: Dictionary containing column widths
 
@@ -130,32 +132,30 @@ def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]
     """
     target_line = '|'
 
-    if nb_loc == 0:
+    if nb_local == 0:
 
         for key, value in data.items():
 
             if key != 'nb':  # Skip the "nb" key
+
                 value_str = str(value)
-                is_second_line = all(char == '-' for char in value_str.strip())
                 diff = widths[key] - len(value_str)
 
-                if is_second_line:
+                if is_second_line is True:
                     padding = '-' * diff
                 else:
                     padding = ' ' * diff
 
                 target_line += f' {value_str}{padding} |'
 
-    elif nb_loc == 1:
+    elif nb_local == 1:
 
         for key, value in data.items():
 
             value_str = str(value)
-
-            is_second_line = value_str and all(char == '-' for char in value_str.strip())
             diff = widths[key] - len(value_str)
 
-            if is_second_line:
+            if is_second_line is True:
                 padding = '-' * diff
             else:
                 padding = ' ' * diff
@@ -167,5 +167,6 @@ def get_target_line_updated(nb_loc, data: Dict[str, str], widths: Dict[str, int]
         raise ValueError('Invalid configuration: TODO')
 
     results = target_line
+
 
     return results

@@ -15,16 +15,18 @@ the central coordinator for:
 
 
 # Python Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import re
+from typing import Union
 
 # Local
 from .config import PROJ_TITLE
 from .config import NB
 from .config import NB_NAME
 from .config import SEQ_NOTATION
+from .config import SEQ_SPARSE
 from .config import SOLUTIONS_DIR
 from .config import CONFIG_DIR
 from .config import TEMPLATES_DIR
@@ -35,9 +37,7 @@ from .helpers import get_target_line_updated
 from .helpers import PackageHandler
 
 
-# Non-breaking hyphen
-HYPHEN = "\u2011"
-
+HYPHEN = "\u2011" # Non-breaking hyphen
 INDEX_START = '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->'
 INDEX_END = '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
 
@@ -104,7 +104,7 @@ def initialize_project_config(env_vars: dict[str, str | int]) -> int:
 
     Args:
         env_vars: Dictionary containing project configuration values
-            Keys: 'proj_title', 'seq_start', 'nb', 'nb_name', 'seq_notation'
+            Keys: 'proj_title', 'seq_start', 'nb', 'nb_name', 'seq_notation', 'seq_sparse'
 
     Returns:
         int: 1 if configuration update successful
@@ -128,6 +128,9 @@ def initialize_project_config(env_vars: dict[str, str | int]) -> int:
 
             if line.startswith('SEQ_NOTATION='):
                 lines[i] = f'SEQ_NOTATION={env_vars["seq_notation"]}\n'
+
+            if line.startswith('SEQ_SPARSE='):
+                lines[i] = f'SEQ_SPARSE={env_vars["seq_sparse"]}\n'
 
         file.seek(0)
         file.writelines(lines)
@@ -287,6 +290,7 @@ def initialize_project(handler: PackageHandler, today: datetime) -> int:
         'nb': int(os.environ.get('NB', NB)),
         'nb_name': os.environ.get('NB_NAME', NB_NAME),
         'seq_notation': int(os.environ.get('SEQ_NOTATION', SEQ_NOTATION)),
+        'seq_sparse': int(os.environ.get('SEQ_SPARSE', SEQ_SPARSE))
     }
 
     # HANDLE CONFIG.PY
@@ -309,6 +313,8 @@ def initialize_project(handler: PackageHandler, today: datetime) -> int:
     handler.update_value('config_base', 'nb_loc', env_vars['nb'])
     handler.update_value('config_base', 'nb_name_loc', env_vars['nb_name'])
     handler.update_value('config_base', 'seq_notation_loc', env_vars['seq_notation'])
+    handler.update_value('config_base', 'seq_sparse_loc', env_vars['seq_sparse'])
+
     handler.update_value('config_cols_widths', 'nb', len(env_vars['nb_name']) + 2)
 
     print('First run initialized')
@@ -341,7 +347,7 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
     """
     seq_start_loc = handler.get_value('config_base', 'seq_start_loc')
     seq_notation_loc = handler.get_value('config_base', 'seq_notation_loc')
-    seq_full = ''
+    seq_next_full_str = ''
 
     with os.scandir(SOLUTIONS_DIR) as entries:
         files = sorted(entry.name for entry in entries)
@@ -350,43 +356,39 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
 
         file_last = files[-1]
 
-        # Handle sequence partials
+        # Handle sequence partials (main and suffix)
         if seq_notation_loc == 0:
 
-            seq_last = int(file_last[:3])
-
+            seq_last_main = int(file_last[:3])
             seq_last_suffix = int(file_last[4:6])
 
-            seq_actual = datetime.strptime(seq_start_loc, f'%Y{HYPHEN}%m{HYPHEN}%d')
-            seq_actual = seq_actual.date()
-            seq_actual = (today.date() - seq_actual).days + 1
-
-            seq = f'{seq_actual:03d}'
+            seq_next_main = datetime.strptime(seq_start_loc, f'%Y{HYPHEN}%m{HYPHEN}%d').date()
+            seq_next_main = (today.date() - seq_next_main).days + 1
+            seq_next_main_str = f'{seq_next_main:03d}'
 
         elif seq_notation_loc == 1:
 
-            seq_last = datetime.strptime(file_last[:10], f'%Y{HYPHEN}%m{HYPHEN}%d')
-            seq_last = seq_last.date()
-
+            seq_last_main = datetime.strptime(file_last[:10], f'%Y{HYPHEN}%m{HYPHEN}%d').date()
             seq_last_suffix = int(file_last[11:13])
 
-            seq_actual = datetime.now().date()
-
-            seq = seq_actual.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
+            seq_next_main = datetime.now().date()
+            seq_next_main_str = seq_next_main.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
 
         else:
-
             raise ValueError('Invalid configuration: TODO')
 
         # Handle full sequence
-        if seq_last == seq_actual:
-            seq_suffix = seq_last_suffix + 1
-            seq_suffix = f'{seq_suffix:02d}'
-            seq_full = f'{seq}_{seq_suffix}'
+        if seq_last_main == seq_next_main:
+
+            seq_next_suffix = seq_last_suffix + 1
+            seq_next_suffix_str = f'{seq_next_suffix:02d}'
+            seq_next_full_str = f'{seq_next_main_str}_{seq_next_suffix_str}'
             print('Note: You have submitted more than 1 entry today.')
 
-        elif seq_last < seq_actual:
-            seq_full = f'{seq}_01'
+        elif seq_last_main < seq_next_main:
+
+            seq_next_suffix_str = '01'
+            seq_next_full_str = f'{seq_next_main_str}_{seq_next_suffix_str}'
 
         else:
             print('Note: Invalid sequence. Processing not terminated.')
@@ -395,19 +397,27 @@ def open_runs_seq(handler: PackageHandler, today: datetime) -> tuple[str, str]:
 
         if seq_notation_loc == 0:
 
-            seq = '001'
-            seq_full = '001_01'
+            seq_last_main = None
+            seq_next_main = None
+
+            seq_next_main_str = '001'
+            seq_next_suffix_str = '01'
+            seq_next_full_str = f'{seq_next_main_str}_{seq_next_suffix_str}'
 
         elif seq_notation_loc == 1:
 
-            seq = today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
-            seq_full = today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d_01')
+            seq_last_main = None
+            seq_next_main = None
+
+            seq_next_main_str = today.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
+            seq_next_suffix_str = '01'
+            seq_next_full_str = f'{seq_next_main_str}_{seq_next_suffix_str}'
 
         else:
-
             raise ValueError('Invalid configuration: TODO')
 
-    return seq, seq_full
+
+    return seq_next_full_str, seq_next_main_str, seq_last_main, seq_next_main
 
 
 def open_runs_file(title: str, seq_full: str) -> str:
@@ -429,6 +439,77 @@ def open_runs_file(title: str, seq_full: str) -> str:
 
 
     return filename
+
+
+def open_runs_index(handler: PackageHandler, seq_last: Union[int, datetime], seq_next: Union[int, datetime]) -> int:
+    """
+    Fills gaps in Index table with empty rows based on sequence notation.
+    
+    Args:
+        handler (PackageHandler): Handler containing data
+        seq_last: Previous sequence number or date
+        seq_next: Current sequence number or date
+        
+    Returns:
+        int: 1 if successful
+        
+    Raises:
+        ValueError: If sequence notation configuration is invalid
+    """
+    if seq_last is not None or seq_next is not None:
+
+        if handler.get_value('config_base', 'nb_loc') == 1:
+            gap_line = '|    |    |    |    |    |\n'
+        else:
+            gap_line = '|    |    |    |    |\n'
+
+
+        with open('README.md', 'r+', encoding='utf-8') as file:
+            lines = file.readlines()
+
+            target_line = len(lines) - 1
+            while target_line >= 0:
+                if INDEX_END in lines[target_line]:
+                    break
+                target_line -= 1
+
+            seq_notation = handler.get_value('config_base', 'seq_notation_loc')
+
+            # Case: 001
+            if seq_notation == 0:
+                if seq_next - seq_last > 1:
+
+                    count = 0
+                    for i in range(seq_last + 1, seq_next):
+                        seq_gap_str = f'{i:03d}'
+                        lines.insert(target_line + count, f'| {seq_gap_str}   {gap_line}')
+                        count += 1
+
+            # Case: 2025-01-01
+            elif seq_notation == 1:
+                if (seq_next - seq_last).days > 1:
+
+                    seq_bound = seq_next
+
+                    count = 0
+                    seq_gap = seq_last + timedelta(days=1)
+
+                    while seq_gap < seq_bound:
+                        seq_gap_str = seq_gap.strftime(f'%Y{HYPHEN}%m{HYPHEN}%d')
+                        lines.insert(target_line + count, f'| {seq_gap_str}   {gap_line}')
+                        count += 1
+                        seq_gap += timedelta(days=1)
+
+            # Case: Invalid
+            else:
+                raise ValueError('Invalid configuration: TODO')
+
+            file.seek(0)
+            file.writelines(lines)
+            file.truncate()
+
+
+    return 1
 
 
 def open_runs_dicts(handler: PackageHandler, seq: str, seq_full: str, new_package: dict, filename: str) -> int:
@@ -526,13 +607,17 @@ def open_runs(handler: PackageHandler, package_list: list[str], today: datetime)
     }
 
     # Create sequence
-    seq, seq_full = open_runs_seq(handler, today)
+    seq_next_full_str, seq_next_main_str, seq_last_main, seq_next_main = open_runs_seq(handler, today)
 
     # Create filename
-    filename = open_runs_file(new_package['title'], seq_full)
+    filename = open_runs_file(new_package['title'], seq_next_full_str)
+
+    # Prep Index
+    if handler.get_value('config_base', 'seq_sparse_loc') == 1:
+        open_runs_index(handler, seq_last_main, seq_next_main)
 
     # Update PackageHandler dicts
-    results = open_runs_dicts(handler, seq, seq_full, new_package, filename)
+    results = open_runs_dicts(handler, seq_next_main_str, seq_next_full_str, new_package, filename)
 
 
     return results
@@ -582,7 +667,8 @@ def implement_runs(handler: PackageHandler) -> int:
     if handler.get_value('entry_data', 'nb') == 'TBD':
         handler.update_value('entry_data', 'nb', '')
 
-    new_entry = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
+    new_entry = get_target_line_updated(False,
+                                        handler.get_value('config_base', 'nb_loc'),
                                         handler.get_dictionary('entry_data'),
                                         handler.get_dictionary('config_cols_widths'))
 
@@ -590,11 +676,6 @@ def implement_runs(handler: PackageHandler) -> int:
     # ######################################
     # UPDATE INDEX
     # ######################################
-    index_block = {
-        'start': '<!-- Index Start - WARNING: Do not delete or modify this markdown comment. -->',
-        'end': '<!-- Index End - WARNING: Do not delete or modify this markdown comment. -->'
-    }
-
     with open('README.md', 'r+', encoding='utf-8') as file:
         lines = file.readlines()
 
@@ -603,9 +684,9 @@ def implement_runs(handler: PackageHandler) -> int:
 
         # GET START AND END LINES OF INDEX
         for i, line in enumerate(lines):
-            if index_block['start'] in line:
+            if INDEX_START in line:
                 start_line = i  # Line numbers start from 1
-            if index_block['end'] in line:
+            if INDEX_END in line:
                 end_line = i
 
 
@@ -620,7 +701,10 @@ def implement_runs(handler: PackageHandler) -> int:
                                                         lines[i])
 
                 # Update target line
-                line_updated = get_target_line_updated(handler.get_value('config_base', 'nb_loc'),
+                is_second_line = bool(i == start_line + 2)
+
+                line_updated = get_target_line_updated(is_second_line,
+                                                       handler.get_value('config_base', 'nb_loc'),
                                                        target_line_data,
                                                        handler.get_dictionary('config_cols_widths'))
 
