@@ -133,28 +133,28 @@ Parameters
 ----------
 SEQ_SPARSE : int
     Values:
-        0: Continuous sequence - no gaps for missed days
-        1: Sparse sequence - adds blank entries in index for missed days
+        0: Continuous rows but non-continuous sequence - skips missing days
+        1: All days in sequence shown - blank entries for missed days
     Default: 0
         
 Example:
     For three-digit format (SEQ_NOTATION=0):
-    If SEQ_SPARSE=0: Missing a day creates sequence
-        001
-        002
-    If SEQ_SPARSE=1: Missing a day creates sequence
-        001
-        002 [all other columns blank]
-        003
+    If SEQ_SPARSE=0: Missing a day shows as gap in sequence
+        Row 1: 001
+        Row 2: 003 (sequence skips 002)
+    If SEQ_SPARSE=1: Missing day included with blank data
+        Row 1: 001 
+        Row 2: 002 [not skipped but other columns blank]
+        Row 3: 003 
     
     For date format (SEQ_NOTATION=1):
-    If SEQ_SPARSE=0: Missing a day creates sequence
-        2025‑01‑01
-        2025‑01‑03
-    If SEQ_SPARSE=1: Missing a day creates sequence
-        2025‑01‑01
-        2025‑01‑02 [all other columns blank]
-        2025‑01‑03
+    If SEQ_SPARSE=0: Missing a day shows as gap in sequence
+        Row 1: 2025‑01‑01
+        Row 2: 2025‑01‑03 (skips 2025‑01‑02)
+    If SEQ_SPARSE=1: Missing day included with blank data
+        Row 1: 2025‑01‑01 
+        Row 2: 2025‑01‑02 [not skipped but other columns blank]
+        Row 3: 2025‑01‑03 
 
 Notes:
     Setting SEQ_SPARSE=1 helps with accountability by making missed days 
