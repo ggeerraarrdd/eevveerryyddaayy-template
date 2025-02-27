@@ -2,63 +2,10 @@
 #
 # WARNING: DO NOT MODIFY THIS CONFIG FILE.
 #
-# Manual modifications may cause unintended behavior.
+# Manual modifications can cause unintended behavior.
 # The system will manage this file automatically.
 #
 # #########################################################################
-
-
-
-
-
-"""
-Project: Title
-===========================================================================
-
-Sets the project title that will be used in generated files.
-
-Parameters
-----------
-PROJ_TITLE : str
-    The name of the project to be used in file headers and templates.
-    Default: '[ ] Everyday'
-
-Example:
-    'SQL Everyday'
-
-Notes:
-    The title will be consistently used across all generated files
-"""
-PROJ_TITLE='[ ] Everyday'
-
-
-
-
-
-"""
-Project: Start Date
-===========================================================================
-
-Controls initialization behavior through start date setting.
-
-Parameters
-----------
-SEQ_START : str
-    Values:
-        '' : Empty string - enables initialization on first run
-        'YYYY‑MM‑DD' : Specific date - prevents initialization
-                       (uses U+2011 non-breaking hyphen)
-    Default: '' (empty string)
-
-Example:
-    '2025‑01‑01' # Note: Uses non-breaking hyphens
-
-Notes:
-    When set to empty string, initialization will occur on first run
-    and SEQ_START will be set to that date. Once set, initialization
-    will not occur again.
-"""
-SEQ_START=''
 
 
 
@@ -167,23 +114,42 @@ SEQ_SPARSE=0
 
 
 """
-Locations of Critical Directories
+Index Table: Column Widths
 ===========================================================================
 
-Controls the paths to critical directories.
+WARNING: DO NOT MODIFY THIS FILE. Manual modifications may cause 
+unintended behavior. The system will manage this file
+automatically.
 
-Parameters
-----------
-SOLUTIONS_DIR : str
-    Relative path to the directory containing solution files
-    Default: 'solutions'
-CONFIG_DIR : str
-    Relative path to the configuration files directory
-    Default: 'src/main/config'
-TEMPLATES_DIR : str
-    Relative path to the templates directory
-    Default: 'src/main/templates' 
+This configuration file defines the markdown widths of the columns in the
+Index table of README.
+
+Column Descriptions:
+    day (int): Width of "Day" column
+    title (int): Width of "Title" column
+    solution (int): Width of "Solution" column
+    site (int): Width of "Site" column
+    difficulty (int): Width of "Difficulty" column
+    nb (int): Width of optional sixth column
+
+COLS_WIDTH_DEFAULT = {
+    'day': 5,
+    'title': 7,
+    'solution': 10,
+    'site': 6,
+    'difficulty': 12,
+    'nb': 1
+}
+
+Notes:
+    These settings only affect the underlying markdown formatting of the
+    Index table, not its visual appearance in the rendered README file.
 """
-SOLUTIONS_DIR='solutions'
-CONFIG_DIR='src/main/config'
-TEMPLATES_DIR='src/main/templates'
+COLS_WIDTH = {
+    'day': 5,
+    'title': 7,
+    'solution': 10,
+    'site': 6,
+    'difficulty': 12,
+    'nb': 1
+}
