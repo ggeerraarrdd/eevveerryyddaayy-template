@@ -131,7 +131,7 @@ def _handle_start_configs(
         for i, line in enumerate(lines):
 
             if line.startswith('SITE_OPTIONS='):
-                lines[i] = f"SITE_OPTIONS=\'{config.get('SITE_OPTIONS')}\'\n"
+                lines[i] = f"SITE_OPTIONS={config.get('SITE_OPTIONS')}\n"
 
         file.seek(0)
         file.writelines(lines)
@@ -211,11 +211,11 @@ def _handle_start_readme(
         lines_readme = file.readlines()
 
         # HANDLE README CHANGES - TITLE
-        if config.get('PROJ_TITLE') in package_changes:
+        if 'PROJ_TITLE' in package_changes.keys():
             lines_readme[0] = f'# {config.get("PROJ_TITLE")}\n'
 
         # HANDLE README CHANGES - NB
-        if config.get('NB') in package_changes and config.get('NB_NAME') in package_changes:
+        if 'NB' in package_changes.keys() and 'NB_NAME' in package_changes.keys():
             for i in range(len(lines_readme)-1, -1, -1):
 
                 if INDEX_START in lines_readme[i]:
@@ -260,15 +260,15 @@ def _handle_start_template(
     """
     lines_template = []
 
-    with open(f'{config.get('SOLUTIONS_DIR')}/solution.txt', 'r+', encoding='utf-8') as file:
+    with open(f'{config.get('TEMPLATES_DIR')}/solution.txt', 'r+', encoding='utf-8') as file:
         lines_template = file.readlines()
 
         # HANDLE TEMPLATE CHANGES - TITLE
-        if config.get('PROJ_TITLE') in package_changes:
-            lines_template[0] = f"# {config.get('PROJECT_TITLE')} \\#{{{{ seq_full }}}}\n"
+        if 'PROJ_TITLE' in package_changes.keys():
+            lines_template[0] = f"# {config.get('PROJ_TITLE')} \\#{{{{ seq_full }}}}\n"
 
         # HANDLE TEMPLATE CHANGES - NB
-        if config.get('NB') in package_changes and config.get('NB_NAME') in package_changes:
+        if 'NB' in package_changes.keys() and 'NB_NAME' in package_changes.keys():
             lines_template[29] = f'## {config.get('NB_NAME')}\n'
             lines_template[32] = '\n'
 
@@ -314,12 +314,12 @@ def handle_start(
     _handle_start_solutions(config)
 
     if len(package_changes) > 0:
-        print(json.dumps(package_changes, indent=4))
+        # print(json.dumps(package_changes, indent=4))
 
         # UPDATE CONFIG FILES
         _handle_start_configs(config)
 
-        if config.get('PROJ_TITLE') in package_changes or config.get('NB') in package_changes:
+        if 'PROJ_TITLE' in package_changes.keys() or 'NB' in package_changes.keys():
             # UPDATE README
             _handle_start_readme(config, package_changes)
 
