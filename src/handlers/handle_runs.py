@@ -20,9 +20,9 @@ Functions:
         handle_runs: Main entry point that coordinates the entire workflow
 
     Private (internal use only):
-        _handle_runs_prep_*: Preparare sequences, filenames, and data
+        _handle_runs_prep_*: Prepare sequences, filenames, and data
         _handle_runs_implement: Creates files and updating indexes
-        _handle_runs_runs_close: Updates configuration settings
+        _handle_runs_close: Updates configuration settings
 """
 
 # Python Standard Library
@@ -387,8 +387,6 @@ def _handle_runs_prep(
     Form data validation is expected to be done elsewhere.
     Does not update config.COLS_WIDTH dictionary.
     """
-    _package = package
-
     # Prepare sequence
     seq_next_full_str, seq_next_main_str, seq_last_main, seq_next_main = _handle_runs_prep_seq(config, today)
 
@@ -449,7 +447,7 @@ def _handle_runs_implement(
             package.update_value('package_widths', key, config_value)
             change_old_lines = 1
 
-    print(change_old_lines)
+    # print(change_old_lines)
 
     # CREATE NEW LINE
     if package.get_value('package', 'nb') == 'TBD':
@@ -460,7 +458,7 @@ def _handle_runs_implement(
                                         package,
                                         data=None)
 
-    print(new_entry)
+    # print(new_entry)
 
     # UPDATE INDEX
     with open('README.md', 'r+', encoding='utf-8') as file:
@@ -509,7 +507,7 @@ def _handle_runs_implement(
     return 1
 
 
-def _handle_runs_runs_close(
+def _handle_runs_close(
         config: ConfigManager,
         column_widths: Dict[str, int]
     ) -> int:
@@ -560,14 +558,14 @@ def handle_runs(
         config: ConfigManager, 
         package: PackageManager, 
         data: Dict[str, Any], today: datetime
-    ) -> None:
+    ) -> int:
     """
     Coordinate the execution flow for processing form inputs and updating project files.
     
     Parameters
     ----------
     config : ConfigManager
-        CCustom container for validating, storing and retrieving application settings
+        Custom container for validating, storing and retrieving application settings
     package : PackageManager
         Custom container for storing and retrieving form data and derived values
     data : Dict[str, Any]
@@ -577,8 +575,8 @@ def handle_runs(
 
     Returns
     -------
-    None
-        Prints "Done" on completion
+    int
+        1 if successful
 
     Notes
     -----
@@ -603,7 +601,7 @@ def handle_runs(
     _handle_runs_implement(config, package)
 
     # RUNS - CLOSE
-    _handle_runs_runs_close(config, package.get_dictionary('package_widths'))
+    _handle_runs_close(config, package.get_dictionary('package_widths'))
 
 
-    return print('Done')
+    return 1
