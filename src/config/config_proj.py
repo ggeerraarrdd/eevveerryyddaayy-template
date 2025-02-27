@@ -34,7 +34,7 @@ Notes:
     and SEQ_START will be set to that date. Once set, initialization
     will not occur again.
 """
-PROJ_START='2025‑02‑26'
+PROJ_START=''
 
 
 
