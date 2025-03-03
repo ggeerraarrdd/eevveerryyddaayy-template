@@ -19,7 +19,7 @@ from src.config import ConfigManager
 
 def validate_project() -> bool:
     """
-    Validate project is initalized or not.
+    Validate project is initialized or not.
 
     Parameters
     ----------
@@ -43,32 +43,32 @@ def validate_project() -> bool:
     """
     config = ConfigManager()
 
-    is_initilized = None
+    is_initialized = None
 
     is_solutions = bool(config.get('SOLUTIONS_DIR'))
     is_solutions_files = len(os.listdir(config.get('SOLUTIONS_DIR'))) == 0
     is_seq_date = bool(config.get('PROJ_START'))
 
     if not is_seq_date and not is_solutions and not is_solutions_files:
-        is_initilized = False
+        is_initialized = False
 
     elif not is_seq_date and not is_solutions:
-        is_initilized = False
+        is_initialized = False
 
     elif not is_seq_date:
-        is_initilized = False
+        is_initialized = False
 
     elif is_seq_date and is_solutions and is_solutions_files:
-        is_initilized = True
+        is_initialized = True
 
     elif is_seq_date and is_solutions:
-        is_initilized = True
+        is_initialized = True
 
     elif is_seq_date:
-        is_initilized = True
+        is_initialized = True
 
     else:
         raise ValueError('Invalid project state: TBD')
 
 
-    return is_initilized
+    return is_initialized
