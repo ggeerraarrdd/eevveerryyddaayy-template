@@ -35,8 +35,8 @@ _eevveerryyddaayy_ is a GitHub template repository. It is the templatized versio
 
 _eevveerryyddaayy_ automates many of the tedious manual work associated with the documentation process, such as handling file creation and organizing project materials. This frees up more time on what matters most—the actual learning.
 
-![The Crickets](assets/the_crickets.png)
-_(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Push like yours will surely come my way, a-hey, a-hey-hey / Push like yours will surely come my way)_
+![The Crickets](assets/images/the_crickets.png)
+_(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Skills like yours will surely come my way, a-hey, a-hey-hey / Skills like yours will surely come my way)_
 
 ## Target Users
 
@@ -147,7 +147,7 @@ eevveerryyddaayy/
     * The first column uses sequential numbering as default (e.g. "001", "002"). **You can switch to date format.**
 
     **Form:**
-    * The default Site list in the Form includes: [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
+    * The default Site list in the Form includes [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
   
 2. **Initialize project with default settings**
 
@@ -239,7 +239,7 @@ If you need to modify your project settings after initialization:
 
 ### Initial Release
 
-* `eevveerryyddaayy` is the templatized version of [`SQL Everyday`](https://github.com/ggeerraarrdd/sql-everyday).
+* _eevveerryyddaayy_ is the templatized version of [_SQL Everyday_](https://github.com/ggeerraarrdd/sql-everyday).
 
 ## Future Work
 
@@ -259,9 +259,9 @@ If you need to modify your project settings after initialization:
 
 ## Screenshots
 
-![eevveerryyddaayy](assets/screenshot1.png)
+![eevveerryyddaayy](assets/images/screenshot1.png)
 
-![eevveerryyddaayy](assets/screenshot2.png)
+![eevveerryyddaayy](assets/images/screenshot2.png)
 
 ## Frontispiece
 
