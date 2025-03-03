@@ -12,10 +12,12 @@ A Github template repository for documenting technical skill-building challenges
 * [Features](#features)
 * [Project Structure](#project-structure)
 * [Prerequisites](#prerequisites)
-* [Getting Started](#getting-started)
+* [Quick Start](#quick-start)
+* [Local Setup](#local-setup)
   * [Dependencies](#dependencies)
   * [Installation](#installation)
   * [Configuration](#configuration)
+* [Production Setup](#production-setup)
 * [Usage](#usage)
 * [System Administration](#system-administration)
   * [Configuration Updates](#configuration-updates)
@@ -31,14 +33,12 @@ A Github template repository for documenting technical skill-building challenges
 
 ## Description
 
-_eevveerryyddaayy-template_, or simply _eevveerryyddaayy_, is a GitHub template repository. It is the templatized version of [_SQL Everyday_](https://github.com/ggeerraarrdd/sql-everyday), a personal skill-building challenge that necessitated an automated and streamlined framework to enable consistent daily practice and to manage an ever-growing coding portfolio.
+_eevveerryyddaayy_ is a GitHub template repository. It is the templatized version of [_SQL Everyday_](https://github.com/ggeerraarrdd/sql-everyday), a personal skill-building challenge that necessitated an automated and streamlined framework to enable consistent daily practice and to manage an ever-growing coding portfolio.
 
 _eevveerryyddaayy_ automates many of the tedious manual work associated with the documentation process, such as handling file creation and organizing project materials. This frees up more time on what matters most—the actual learning.
 
-Note that this repository contains only the documentation for _eevveerryyddaayy_. For the Github template repository itself, go [here](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/).
-
 ![The Crickets](images/the_crickets.png)
-_(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Push like yours will surely come my way, a-hey, a-hey-hey / Push like yours will surely come my way)_
+_(Everyday, it's a gettin' closer / Goin' faster than a roller coaster / Skills like yours will surely come my way, a-hey, a-hey-hey / Skills like yours will surely come my way)_
 
 ## Target Users
 
@@ -62,7 +62,7 @@ _eevveerryyddaayy_ is intended for **self-directed learners**, such as:
 ## Project Structure
 
 ```text
-eevveerryyddaayy-template/
+eevveerryyddaayy/
 │
 ├── src/
 │   ├── __init__.py
@@ -91,6 +91,7 @@ eevveerryyddaayy-template/
 ├── every_update.ipynb
 │
 ├── .vscode
+├── assets/
 ├── docs/
 ├── .gitignore
 ├── .pylintrc
@@ -110,7 +111,33 @@ eevveerryyddaayy-template/
   * **IMPORTANT**: Install specifically version `v2024.11.0` - not tested on any other version
   * From VS Code marketplace: Extensions icon → ⚙️ icon next to Jupyter → Install Another Version → Select v2024.11.0
 
-## Getting Started
+## Quick Start
+
+1. **Create a repository from template**
+
+   * Use GitHub's [template feature](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) with this repository.
+
+2. **Clone and set up locally**
+
+   ```bash
+   git clone your-repository-url
+   cd your-repository-name
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   pip install -r requirements.txt
+   ```
+
+3. **Initialize project**
+
+   * Open `every_start.ipynb` in VS Code.
+   * Run all cells to initialize with default settings.
+
+4. **Start using**
+   * Open `every_entry.ipynb`.
+   * Run the cells to display the form interface.
+   * Fill in your first entry and click the submit button.
+
+## Local Setup
 
 ### Dependencies
 
@@ -120,12 +147,7 @@ eevveerryyddaayy-template/
 
 1. **Follow Github's documentation on [Creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)**
 
-    👉 The template repository is located [here](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/).
-
 2. **Clone the new repository**
-
-    * Open a terminal window in VS Code.
-    * Navigate to where you want the repository directory saved.
 
     ```bash
     git clone your-repository-url
@@ -140,11 +162,6 @@ eevveerryyddaayy-template/
     pip install -r requirements.txt
     ```
 
-4. **Rename VS Code settings file**
-
-    * Navigate to the `.vscode` directory
-    * Rename `settings.template.json` to `settings.json`
-
 ### Configuration
 
 1. **Default settings**
@@ -156,18 +173,21 @@ eevveerryyddaayy-template/
     * The default index table has 5 columns. **You can add a 6th column.**
     * The default name of an activated sixth column is "NB". **You can choose a different name.**
     * The first column uses sequential numbering as default (e.g. "001", "002"). **You can switch to date format.**
+    * The rows show no gaps when a day is missed. **You can allow gaps to mark missed days for accountability.**
 
     **Form:**
-    * The default Site list in the Form includes: [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
-
-    If you don't want to change these default settings, skip to #4.
+    * The default Site list in the Form includes [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
   
-2. **Customize Project settings**
-
-    You can customize your settings during initialization by using the `every_start.ipynb` notebook.
+2. **Initialize project: Option 1: With Default Settings**
 
     1. Open the `every_start.ipynb` notebook in the root directory.
-    2. Modify the code cell containing configuration settings:
+    2. Run all code cells by clicking `Run All`.
+    3. Skip to #4.
+
+3. **Initialize project: Option 2: With Custom Settings**
+
+    1. Open the `every_start.ipynb` notebook in the root directory.
+    2. Modify the code cell containing configuration settings (see #4 for details of options):
 
         ```python
         # Project: Title
@@ -187,26 +207,36 @@ eevveerryyddaayy-template/
         SITE_OPTIONS=['Codewars', 'DataLemur', 'LeetCode']
         ```
 
-3. **Configuration options explained**
+        **Configuration options explained**
 
-    **Project Title:**
-    * Change `PROJ_TITLE` to your preferred project title.
+        ```text
+        **Project Title:**
+        * Change `PROJ_TITLE` to your preferred project title.
 
-    **Index Table:**
-    * To add a 6th column: `NB=1`
-    * To customize the 6th column name: `NB_NAME='Your Preferred Name'`
-    * To switch to date format instead of sequential numbering: `SEQ_NOTATION=1`
-    * To allow gaps in sequential numbering: `SEQ_SPARSE=1`
+        **Index Table:**
+        * To add a 6th column: `NB=1`
+        * To customize the 6th column name: `NB_NAME='Your Preferred Name'`
+        * To switch to date format instead of sequential numbering: `SEQ_NOTATION=1`
+        * To allow gaps in sequential numbering: `SEQ_SPARSE=1`
 
-    **Form:**
-    * Customize `SITE_OPTIONS` with your preferred sites as a list of strings.
-    * If there is only one item in the list, that site becomes the only option and default value.
+        **Form:**
+        * Customize `SITE_OPTIONS` with your preferred sites as a list of strings.
+        * If there is only one item in the list, that site becomes the only option and default value.
+        ```
 
-4. **Customize README**
+    3. Run all code cells by clicking `Run All`.
+
+4. **Customize README.md**
+
+    After the project has been initialized, `README.template.md` should be the new `README.md` in the root directory. A copy of the previous `README.md` with the project documentation is stored in `docs`.
+
+    Feel free to make changes to the new `README.md`, including the title and description of your project.
 
     ⚠️ **IMPORTANT:** The Index table, including its enclosing markdown comments, can be placed elsewhere but must not be modified in any other way or deleted.
 
-    Feel free to make any other changes to README, including the title and description of your project.
+## Production Setup
+
+This application primarily runs in the user's local environment using VS Code and Jupyter notebooks. However, the GitHub repository serves as the "production environment" for the portfolio aspect of the project.
 
 ## Usage
 
@@ -218,7 +248,26 @@ eevveerryyddaayy-template/
 
 4. Fill in the fields and click the submit button.
 
-    🎉 Congratulations! You're a day closer to achieving your goal!
+5. **Update your portfolio.**
+
+   **Using VS Code:**
+
+   * Click on the Source Control icon in the sidebar (or press `Ctrl+Shift+G`)
+   * Review changed files in the "Changes" section
+   * Hover over "Changes" and click the `+` to stage all changes (or stage individual files)
+   * Enter a commit message like "Add daily entry #[number]"
+   * Click the checkmark to commit
+   * Click on the "..." menu and select "Push"
+
+   **Using Terminal:**
+
+   ```bash
+   git add .
+   git commit -m "Add daily entry #[number]"
+   git push origin main
+   ```
+
+6. 🎉 Congratulations! You're a day closer to achieving your goal!
 
 ## System Administration
 
@@ -240,15 +289,15 @@ If you need to modify your project settings after initialization:
 
 ### Release Notes
 
-* See [https://github.com/ggeerraarrdd/eevveerryyddaayy-template/releases](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/releases)
+* See [https://github.com/ggeerraarrdd/eevveerryyddaayy/releases](https://github.com/ggeerraarrdd/eevveerryyddaayy/releases)
 
 ### Initial Release
 
-* `eevveerryyddaayy` is the templatized version of [`SQL Everyday`](https://github.com/ggeerraarrdd/sql-everyday).
+* _eevveerryyddaayy_ is the templatized version of [_SQL Everyday_](https://github.com/ggeerraarrdd/sql-everyday).
 
 ## Future Work
 
-* Filter for the `enhancement` label in [Issues](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/issues).
+* Filter for the `enhancement` label in [Issues](https://github.com/ggeerraarrdd/eevveerryyddaayy/issues).
 
 ## License
 
@@ -264,9 +313,9 @@ If you need to modify your project settings after initialization:
 
 ## Screenshots
 
-![eevveerryyddaayy](docs/screenshot1.png)
+![eevveerryyddaayy](images/screenshot1.png)
 
-![eevveerryyddaayy](docs/screenshot2.png)
+![eevveerryyddaayy](images/screenshot2.png)
 
 ## Frontispiece
 
