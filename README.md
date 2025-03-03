@@ -12,10 +12,12 @@ A Github template repository for documenting technical skill-building challenges
 * [Features](#features)
 * [Project Structure](#project-structure)
 * [Prerequisites](#prerequisites)
-* [Getting Started](#getting-started)
+* [Quick Start](#quick-start)
+* [Local Setup](#local-setup)
   * [Dependencies](#dependencies)
   * [Installation](#installation)
   * [Configuration](#configuration)
+* [Production Setup](#production-setup)
 * [Usage](#usage)
 * [System Administration](#system-administration)
   * [Configuration Updates](#configuration-updates)
@@ -109,7 +111,33 @@ eevveerryyddaayy/
   * **IMPORTANT**: Install specifically version `v2024.11.0` - not tested on any other version
   * From VS Code marketplace: Extensions icon → ⚙️ icon next to Jupyter → Install Another Version → Select v2024.11.0
 
-## Getting Started
+## Quick Start
+
+1. **Create a repository from template**
+
+   * Use GitHub's [template feature](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) with this repository.
+
+2. **Clone and set up locally**
+
+   ```bash
+   git clone your-repository-url
+   cd your-repository-name
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   pip install -r requirements.txt
+   ```
+
+3. **Initialize project**
+
+   * Open `every_start.ipynb` in VS Code.
+   * Run all cells to initialize with default settings.
+
+4. **Start using**
+   * Open `every_entry.ipynb`.
+   * Run the cells to display the form interface.
+   * Fill in your first entry and click the submit button.
+
+## Local Setup
 
 ### Dependencies
 
@@ -149,13 +177,13 @@ eevveerryyddaayy/
     **Form:**
     * The default Site list in the Form includes [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
   
-2. **Initialize project with default settings**
+2. **Initialize project: Option 1: With Default Settings**
 
     1. Open the `every_start.ipynb` notebook in the root directory.
     2. Run all code cells by clicking `Run All`.
-    3. Skip to #5.
+    3. Skip to #4.
 
-3. **Initialize project with custom settings**
+3. **Initialize project: Option 2: With Custom Settings**
 
     1. Open the `every_start.ipynb` notebook in the root directory.
     2. Modify the code cell containing configuration settings (see #4 for details of options):
@@ -178,30 +206,36 @@ eevveerryyddaayy/
         SITE_OPTIONS=['Codewars', 'DataLemur', 'LeetCode']
         ```
 
+        **Configuration options explained**
+
+        ```text
+        **Project Title:**
+        * Change `PROJ_TITLE` to your preferred project title.
+
+        **Index Table:**
+        * To add a 6th column: `NB=1`
+        * To customize the 6th column name: `NB_NAME='Your Preferred Name'`
+        * To switch to date format instead of sequential numbering: `SEQ_NOTATION=1`
+        * To allow gaps in sequential numbering: `SEQ_SPARSE=1`
+
+        **Form:**
+        * Customize `SITE_OPTIONS` with your preferred sites as a list of strings.
+        * If there is only one item in the list, that site becomes the only option and default value.
+        ```
+
     3. Run all code cells by clicking `Run All`.
 
-4. **Configuration options explained**
-
-    **Project Title:**
-    * Change `PROJ_TITLE` to your preferred project title.
-
-    **Index Table:**
-    * To add a 6th column: `NB=1`
-    * To customize the 6th column name: `NB_NAME='Your Preferred Name'`
-    * To switch to date format instead of sequential numbering: `SEQ_NOTATION=1`
-    * To allow gaps in sequential numbering: `SEQ_SPARSE=1`
-
-    **Form:**
-    * Customize `SITE_OPTIONS` with your preferred sites as a list of strings.
-    * If there is only one item in the list, that site becomes the only option and default value.
-
-5. **Customize README.md**
+4. **Customize README.md**
 
     After the project has been initialized, `README.template.md` should be the new `README.md` in the root directory. A copy of the previous `README.md` with the project documentation is stored in `docs`.
 
     Feel free to make changes to the new `README.md`, including the title and description of your project.
 
     ⚠️ **IMPORTANT:** The Index table, including its enclosing markdown comments, can be placed elsewhere but must not be modified in any other way or deleted.
+
+## Production Setup
+
+This application primarily runs in the user's local environment using VS Code and Jupyter notebooks. However, the GitHub repository serves as the "production environment" for the portfolio aspect of the project.
 
 ## Usage
 
@@ -213,7 +247,26 @@ eevveerryyddaayy/
 
 4. Fill in the fields and click the submit button.
 
-    🎉 Congratulations! You're a day closer to achieving your goal!
+5. **Update your portfolio.**
+
+   **Using VS Code:**
+
+   * Click on the Source Control icon in the sidebar (or press `Ctrl+Shift+G`)
+   * Review changed files in the "Changes" section
+   * Hover over "Changes" and click the `+` to stage all changes (or stage individual files)
+   * Enter a commit message like "Add daily entry #[number]"
+   * Click the checkmark to commit
+   * Click on the "..." menu and select "Push"
+
+   **Using Terminal:**
+
+   ```bash
+   git add .
+   git commit -m "Add daily entry #[number]"
+   git push origin main
+   ```
+
+6. 🎉 Congratulations! You're a day closer to achieving your goal!
 
 ## System Administration
 
