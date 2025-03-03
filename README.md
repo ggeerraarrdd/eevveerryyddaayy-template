@@ -60,7 +60,7 @@ _eevveerryyddaayy_ is intended for **self-directed learners**, such as:
 ## Project Structure
 
 ```text
-eevveerryyddaayy-template/
+eevveerryyddaayy/
 │
 ├── src/
 │   ├── __init__.py
@@ -89,6 +89,7 @@ eevveerryyddaayy-template/
 ├── every_update.ipynb
 │
 ├── .vscode
+├── assets/
 ├── docs/
 ├── .gitignore
 ├── .pylintrc
@@ -118,12 +119,7 @@ eevveerryyddaayy-template/
 
 1. **Follow Github's documentation on [Creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)**
 
-    👉 The template repository is located [here](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/).
-
 2. **Clone the new repository**
-
-    * Open a terminal window in VS Code.
-    * Navigate to where you want the repository directory saved.
 
     ```bash
     git clone your-repository-url
@@ -137,15 +133,6 @@ eevveerryyddaayy-template/
     pip install --upgrade pip
     pip install -r requirements.txt
     ```
-
-4. **Rename VS Code settings file**
-
-    * Navigate to the `.vscode` directory
-    * Rename `settings.template.json` to `settings.json`
-
-5. **Overwrite `README.md` with `README.template.md`**
-
-    * No need to back up the README.md file. A copy is stored in `docs`.
 
 ### Configuration
 
@@ -161,15 +148,17 @@ eevveerryyddaayy-template/
 
     **Form:**
     * The default Site list in the Form includes: [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
-
-    If you don't want to change these default settings, skip to #4.
   
-2. **Customize Project settings**
-
-    You can customize your settings during initialization by using the `every_start.ipynb` notebook.
+2. **Initialize project with default settings**
 
     1. Open the `every_start.ipynb` notebook in the root directory.
-    2. Modify the code cell containing configuration settings:
+    2. Run all code cells by clicking `Run All`.
+    3. Skip to #5.
+
+3. **Initialize project with custom settings**
+
+    1. Open the `every_start.ipynb` notebook in the root directory.
+    2. Modify the code cell containing configuration settings (see #4 for details of options):
 
         ```python
         # Project: Title
@@ -189,7 +178,9 @@ eevveerryyddaayy-template/
         SITE_OPTIONS=['Codewars', 'DataLemur', 'LeetCode']
         ```
 
-3. **Configuration options explained**
+    3. Run all code cells by clicking `Run All`.
+
+4. **Configuration options explained**
 
     **Project Title:**
     * Change `PROJ_TITLE` to your preferred project title.
@@ -204,11 +195,13 @@ eevveerryyddaayy-template/
     * Customize `SITE_OPTIONS` with your preferred sites as a list of strings.
     * If there is only one item in the list, that site becomes the only option and default value.
 
-4. **Customize README**
+5. **Customize README.md**
+
+    After the project has been initialized, `README.template.md` should be the new `README.md` in the root directory. A copy of the previous `README.md` with the project documentation is stored in `docs`.
+
+    Feel free to make changes to the new `README.md`, including the title and description of your project.
 
     ⚠️ **IMPORTANT:** The Index table, including its enclosing markdown comments, can be placed elsewhere but must not be modified in any other way or deleted.
-
-    Feel free to make any other changes to README, including the title and description of your project.
 
 ## Usage
 
@@ -242,7 +235,7 @@ If you need to modify your project settings after initialization:
 
 ### Release Notes
 
-* See [https://github.com/ggeerraarrdd/eevveerryyddaayy-template/releases](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/releases)
+* See [https://github.com/ggeerraarrdd/eevveerryyddaayy/releases](https://github.com/ggeerraarrdd/eevveerryyddaayy/releases)
 
 ### Initial Release
 
@@ -250,7 +243,7 @@ If you need to modify your project settings after initialization:
 
 ## Future Work
 
-* Filter for the `enhancement` label in [Issues](https://github.com/ggeerraarrdd/eevveerryyddaayy-template/issues).
+* Filter for the `enhancement` label in [Issues](https://github.com/ggeerraarrdd/eevveerryyddaayy/issues).
 
 ## License
 
