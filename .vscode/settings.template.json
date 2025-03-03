@@ -1,5 +1,11 @@
 {
     "editor.unicodeHighlight.allowedCharacters": {
         "‑": true
+    },
+    "files.associations": {
+      "*.md": "markdown"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "off"
     }
 }
