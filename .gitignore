@@ -169,6 +169,7 @@ cython_debug/
 # VS Code
 .commons
 .vscode/settings.json
+.vscode/cspell.json
 
 # macOS
 .DS_Store
