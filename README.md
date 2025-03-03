@@ -173,6 +173,7 @@ eevveerryyddaayy/
     * The default index table has 5 columns. **You can add a 6th column.**
     * The default name of an activated sixth column is "NB". **You can choose a different name.**
     * The first column uses sequential numbering as default (e.g. "001", "002"). **You can switch to date format.**
+    * The rows show no gaps when a day is missed. **You can allow gaps to mark missed days for accountability.**
 
     **Form:**
     * The default Site list in the Form includes [Codewars](https://www.codewars.com/), [DataLemur](https://datalemur.com/) and [LeetCode](https://leetcode.com/). **You can add or remove.**
