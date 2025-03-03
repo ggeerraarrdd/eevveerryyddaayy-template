@@ -156,7 +156,7 @@ def eevveerryyddaayy(*args: Any, **kwargs: Any) -> Union[int, Any]:
         Status code (int) or form widget (for source=2)
         1 for success, 0 for failure or error condition
     """
-    is_initilized = validate_project()
+    is_initialized = validate_project()
 
     # from IPython import get_ipython
     # ip = get_ipython()
@@ -179,7 +179,7 @@ def eevveerryyddaayy(*args: Any, **kwargs: Any) -> Union[int, Any]:
         if kwargs['source'] == 0:
 
             # START FORM - every_start.ipynb
-            if is_initilized:
+            if is_initialized:
                 print('Project is already initialized.')
                 print('Use every_update.ipynb to update project settings.')
                 print('Use every_entry.ipynb to create a project entry.')
@@ -192,7 +192,7 @@ def eevveerryyddaayy(*args: Any, **kwargs: Any) -> Union[int, Any]:
 
         if kwargs['source'] == 1:
             # UPDATE FORM - every_update.ipynb
-            # if is_initilized:
+            # if is_initialized:
             #     print('Updating project settings...')
             #
             # print('Project is not initialized.')
@@ -204,7 +204,7 @@ def eevveerryyddaayy(*args: Any, **kwargs: Any) -> Union[int, Any]:
 
     elif kwargs['source'] == 2:
         # ENTRY FORM - every_entry.ipynb
-        if is_initilized:
+        if is_initialized:
             return add_project()
 
         print('The project is not initialized.')

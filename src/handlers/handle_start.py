@@ -21,6 +21,7 @@ Functions:
 from datetime import datetime
 import json  # pylint: disable=unused-import
 import os
+import shutil
 
 # Third-Party Libraries
 
@@ -37,6 +38,59 @@ from src.utils import INDEX_END
 
 
 
+
+
+def _handle_start_files(
+    target_dir: str,
+    target_file: str,
+    destination_dir: str,
+    destination_file: str
+    ) -> int:
+    """
+    Handle file operations for VS Code settings or other configuration files.
+
+    Parameters
+    ----------
+    target_dir : str
+        Directory containing the target file, default is ".vscode"
+    target_file : str
+        Name of the target file to be moved, default is "settings.json"
+    destination_dir : str
+        Directory where the target file will be moved, default is "assets/deprecated"
+    destination_file : str
+        Name of the file at destination, default is "settings.json"
+
+    Returns
+    -------
+    int
+        1 if operations successful
+    """
+    template_file = f"{os.path.splitext(target_file)[0]}.template{os.path.splitext(target_file)[1]}"
+
+    target_path = os.path.join(target_dir, target_file)
+    template_path = os.path.join(target_dir, template_file)
+    destination_path = os.path.join(destination_dir, destination_file)
+
+    # Ensure destination directory exists
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
+
+    # Step 1: Check if target file exists and move it
+    if os.path.exists(target_path):
+        # If file already at destination, create backup
+        if os.path.exists(destination_path):
+            backup_path = os.path.join(destination_dir, f"{destination_file}.bak")
+            shutil.move(destination_path, backup_path)
+
+        # Move target file to destination
+        shutil.move(target_path, destination_path)
+
+    # Step 2: Check if template file exists and copy to target location
+    if os.path.exists(template_path):
+        shutil.copy(template_path, target_path)
+        os.remove(template_path)
+
+    return 1
 
 
 def _handle_start_date(
@@ -307,6 +361,12 @@ def handle_start(
     - Setting up Index table in README.md
     - Configuring template files
     """
+    # HANDLE README.TEMPLATE.MD
+    _handle_start_files(".", "README.md", "assets/deprecated", "README.md")
+
+    # HANDLE SETTINGS.TEMPLATE.JSON
+    _handle_start_files(".vscode", "settings.json", "assets/deprecated", "settings.json")
+
     # UPDATE PROJECT START DATE
     _handle_start_date(config)
 
