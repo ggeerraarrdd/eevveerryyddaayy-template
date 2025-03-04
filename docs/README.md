@@ -11,16 +11,15 @@ A Github template repository for documenting technical skill-building challenges
 * [Target Users](#target-users)
 * [Features](#features)
 * [Project Structure](#project-structure)
-* [Prerequisites](#prerequisites)
 * [Quick Start](#quick-start)
 * [Local Setup](#local-setup)
+  * [Prerequisites](#prerequisites)
   * [Dependencies](#dependencies)
   * [Installation](#installation)
   * [Configuration](#configuration)
-* [Production Setup](#production-setup)
 * [Usage](#usage)
+* [Production Setup](#production-setup)
 * [System Administration](#system-administration)
-  * [Configuration Updates](#configuration-updates)
 * [Author(s)](#authors)
 * [Version History](#version-history)
   * [Release Notes](#release-notes)
@@ -100,17 +99,6 @@ eevveerryyddaayy/
 └── requirements.txt
 ```
 
-## Prerequisites
-
-* **Python 3.12**
-  * Not tested on other versions
-* **VS Code** as your development environment
-* Familiarity with **Jupyter Notebooks**
-* **Jupyter extension** for VS Code
-  * Required for running notebook files
-  * **IMPORTANT**: Install specifically version `v2024.11.0` - not tested on any other version
-  * From VS Code marketplace: Extensions icon → ⚙️ icon next to Jupyter → Install Another Version → Select v2024.11.0
-
 ## Quick Start
 
 1. **Create a repository from template**
@@ -119,13 +107,16 @@ eevveerryyddaayy/
 
 2. **Clone and set up locally**
 
-   ```bash
-   git clone your-repository-url
-   cd your-repository-name
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   pip install -r requirements.txt
-   ```
+    ```bash
+    # Clone the repository
+    git clone https://github.com/ggeerraarrdd/eevveerryyddaayy.git
+
+    # Set up environment and install dependencies
+    cd eevveerryyddaayy
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\\Scripts\\activate`
+    pip install -r requirements.txt
+    ```
 
 3. **Initialize project**
 
@@ -138,6 +129,17 @@ eevveerryyddaayy/
    * Fill in your first entry and click the submit button.
 
 ## Local Setup
+
+### Prerequisites
+
+* **Python 3.12**
+  * Not tested on other versions
+* **VS Code** as your development environment
+* Familiarity with **Jupyter Notebooks**
+* **Jupyter extension** for VS Code
+  * Required for running notebook files
+  * **IMPORTANT**: Install specifically version `v2024.11.0` - not tested on any other version
+  * From VS Code marketplace: Extensions icon → ⚙️ icon next to Jupyter → Install Another Version → Select v2024.11.0
 
 ### Dependencies
 
@@ -234,10 +236,6 @@ eevveerryyddaayy/
 
     ⚠️ **IMPORTANT:** The Index table, including its enclosing markdown comments, can be placed elsewhere but must not be modified in any other way or deleted.
 
-## Production Setup
-
-This application primarily runs in the user's local environment using VS Code and Jupyter notebooks. However, the GitHub repository serves as the "production environment" for the portfolio aspect of the project.
-
 ## Usage
 
 1. Open the project folder on VS Code, if not already.
@@ -268,6 +266,10 @@ This application primarily runs in the user's local environment using VS Code an
    ```
 
 6. 🎉 Congratulations! You're a day closer to achieving your goal!
+
+## Production Setup
+
+This application primarily runs in the user's local environment using VS Code and Jupyter notebooks. However, the GitHub repository serves as the "production environment" for the portfolio aspect of the project.
 
 ## System Administration
 
